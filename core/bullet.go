@@ -32,12 +32,11 @@ func NewBullet(x float64, y float64, dir int, kind string) *Bullet {
 		dir:   dir,
 		image: "normal",
 		images: map[string]*ebiten.Image{
-			"normal":    common.LoadImage("bullet.png"),
-			"explosion": common.LoadImage("explosion.png"),
+			"normal": common.LoadImage("bullet.png"),
 		},
 		state: normalState,
 		size:  bulletSize,
-		speed: 50,
+		speed: 60,
 		kind:  kind,
 	}
 }
@@ -60,7 +59,8 @@ func (r *Bullet) Update(delta float64, game *Game) {
 			if game.player.state == playingState {
 				if common.Overlap(game.player.x, game.player.y, float64(game.player.size), r.x, r.y, float64(r.size)) {
 					r.state = hitState
-					game.player.GetHit()
+					game.player.GetHit(game)
+					game.AddEffect(r.x, r.y, "explosion")
 					r.GetHit()
 				}
 			}
@@ -71,7 +71,9 @@ func (r *Bullet) Update(delta float64, game *Game) {
 					if common.Overlap(a.x, a.y, float64(a.size), r.x, r.y, float64(r.size)) {
 						r.state = hitState
 						game.aliens[index].GetHit()
+						game.AddEffect(game.aliens[index].x, game.aliens[index].y, "explosion")
 						r.GetHit()
+						game.AddEffect(r.x, r.y, "explosion")
 						game.ScorePoint()
 					}
 				}
@@ -89,13 +91,13 @@ func (r *Bullet) Update(delta float64, game *Game) {
 func (r *Bullet) GetHit() {
 	r.state = hitState
 	r.timer = 1.0
-	r.image = "explosion"
-	r.frame = 0
 }
 
 func (r *Bullet) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(r.x, r.y)
-	op.GeoM.Scale(common.Scale, common.Scale)
-	screen.DrawImage(r.images[r.image].SubImage(image.Rect(r.frame*r.size, 0, (r.frame+1)*r.size, r.size)).(*ebiten.Image), op)
+	if r.state == normalState {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(r.x, r.y)
+		op.GeoM.Scale(common.Scale, common.Scale)
+		screen.DrawImage(r.images[r.image].SubImage(image.Rect(r.frame*r.size, 0, (r.frame+1)*r.size, r.size)).(*ebiten.Image), op)
+	}
 }

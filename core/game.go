@@ -21,6 +21,7 @@ type Game struct {
 	aliens           []*Alien
 	alienGroup       *AlienGroup
 	stars            []*Star
+	effects          []*Animation
 	timer            float64
 	state            string
 	images           map[string]*ebiten.Image
@@ -32,8 +33,9 @@ func NewGame() *Game {
 	g := &Game{
 		state: menuGameState,
 		images: map[string]*ebiten.Image{
-			"splash": common.LoadImage("splash.png"),
-			"earth":  common.LoadImage("earth.png"),
+			"splash":    common.LoadImage("splash.png"),
+			"earth":     common.LoadImage("earth.png"),
+			"explosion": common.LoadImage("explosion.png"),
 		},
 		stars:            []*Star{},
 		lastUpdateCalled: time.Now(),
@@ -111,6 +113,10 @@ func (r *Game) Update() error {
 		}
 	}
 
+	for _, e := range r.effects {
+		e.Update(delta)
+	}
+
 	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
 		ebiten.SetFullscreen(!ebiten.IsFullscreen())
 	}
@@ -127,7 +133,6 @@ func (r *Game) Draw(screen *ebiten.Image) {
 	case menuGameState:
 		r.drawImage(screen, "splash", 40, 40)
 		common.DrawText(screen, "start game", 60, 120)
-
 	case playingGameState:
 		r.drawImage(screen, "earth", 0, common.ScreenHeight-24)
 		r.player.Draw(screen)
@@ -136,6 +141,9 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		}
 		for _, a := range r.aliens {
 			a.Draw(screen)
+		}
+		for _, e := range r.effects {
+			e.Draw(screen)
 		}
 		common.DrawText(screen, fmt.Sprintf("score %d", r.score), 4, 4)
 		common.DrawText(screen, fmt.Sprintf("lives %d", r.player.lives), 130, 4)
@@ -147,6 +155,9 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		for _, a := range r.aliens {
 			a.Draw(screen)
 		}
+		for _, e := range r.effects {
+			e.Draw(screen)
+		}
 		common.DrawText(screen, "game over", 60, 90)
 	case levelOverGameState:
 		r.drawImage(screen, "earth", 0, common.ScreenHeight-24)
@@ -154,10 +165,16 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		for _, b := range r.bullets {
 			b.Draw(screen)
 		}
+		for _, e := range r.effects {
+			e.Draw(screen)
+		}
 		common.DrawText(screen, "   wave\ndestroyed", 60, 90)
 	case gameWonGameState:
 		r.drawImage(screen, "earth", 0, common.ScreenHeight-24)
 		r.player.Draw(screen)
+		for _, e := range r.effects {
+			e.Draw(screen)
+		}
 		common.DrawText(screen, " you win!", 60, 70)
 		common.DrawText(screen, "the earth\nis saved!", 60, 120)
 	}
@@ -169,6 +186,7 @@ func (r *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func (r *Game) StartNewGame() {
+	r.effects = []*Animation{}
 	fmt.Println("starting new game")
 	r.bullets = []*Bullet{}
 	r.aliens = []*Alien{}
@@ -178,6 +196,7 @@ func (r *Game) StartNewGame() {
 }
 
 func (r *Game) StartNewLevel() {
+	r.effects = []*Animation{}
 	r.level = r.level + 1
 	r.aliens = []*Alien{}
 	r.alienGroup = NewAlienGroup(r, 5*(r.level+2))
@@ -253,4 +272,18 @@ func (r *Game) drawImage(screen *ebiten.Image, img string, x float64, y float64)
 
 func (r *Game) AddAlien(alien *Alien) {
 	r.aliens = append(r.aliens, alien)
+}
+
+func (r *Game) AddEffect(x float64, y float64, kind string) {
+	switch kind {
+	case "explosion":
+		r.effects = append(r.effects, &Animation{
+			numFrames:       8,
+			frameTimeAmount: 0.06,
+			image:           r.images["explosion"],
+			size:            12,
+			x:               x,
+			y:               y,
+		})
+	}
 }

@@ -31,8 +31,7 @@ func NewAlien(x float64, y float64, dir int) *Alien {
 		dir:   dir,
 		image: "normal",
 		images: map[string]*ebiten.Image{
-			"normal":    common.LoadImage("pluton.png"),
-			"explosion": common.LoadImage("explosion.png"),
+			"normal": common.LoadImage("pluton.png"),
 		},
 		state: normalAlienState,
 		size:  alienSize,
@@ -51,7 +50,8 @@ func (r *Alien) Update(delta float64, game *Game) {
 		if game.player.state == playingState {
 			if common.Overlap(game.player.x, game.player.y, float64(game.player.size), r.x, r.y, float64(r.size)) {
 				r.state = hitState
-				game.player.GetHit()
+				game.player.GetHit(game)
+				game.AddEffect(r.x, r.y, "explosion")
 				r.GetHit()
 			}
 		}
@@ -67,13 +67,13 @@ func (r *Alien) Update(delta float64, game *Game) {
 func (r *Alien) GetHit() {
 	r.state = hitAlienState
 	r.timer = 1.0
-	r.image = "explosion"
-	r.frame = 0
 }
 
 func (r *Alien) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(r.x, r.y)
-	op.GeoM.Scale(common.Scale, common.Scale)
-	screen.DrawImage(r.images[r.image].SubImage(image.Rect(r.frame*r.size, 0, (r.frame+1)*r.size, r.size)).(*ebiten.Image), op)
+	if r.state == normalAlienState {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(r.x, r.y)
+		op.GeoM.Scale(common.Scale, common.Scale)
+		screen.DrawImage(r.images[r.image].SubImage(image.Rect(r.frame*r.size, 0, (r.frame+1)*r.size, r.size)).(*ebiten.Image), op)
+	}
 }
