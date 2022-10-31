@@ -18,15 +18,15 @@ type AlienGroup struct {
 func NewAlienGroup(game *Game, numberOfAliens int) *AlienGroup {
 	group := &AlienGroup{
 		x:     alienSize,
-		y:     alienSize,
+		y:     24,
 		dir:   1,
 		speed: 10,
 	}
 	// add the aliens
-	x := alienSize + 6
-	y := 6
+	x := alienSize + 6.0
+	y := group.y
 	for index := 0; index < numberOfAliens; index += 1 {
-		alien := NewAlien(float64(x), float64(y), 1)
+		alien := NewAlien(x, y, 1)
 		game.AddAlien(alien)
 		x = x + (alienSize * 2)
 		if (index+1)%5 == 0 {

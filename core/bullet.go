@@ -72,6 +72,7 @@ func (r *Bullet) Update(delta float64, game *Game) {
 						r.state = hitState
 						game.aliens[index].GetHit()
 						r.GetHit()
+						game.ScorePoint()
 					}
 				}
 			}

@@ -24,6 +24,7 @@ type Game struct {
 	state            string
 	images           map[string]*ebiten.Image
 	level            int
+	score            int
 }
 
 func NewGame() *Game {
@@ -121,6 +122,8 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		for _, a := range r.aliens {
 			a.Draw(screen)
 		}
+		common.DrawText(screen, fmt.Sprintf("score %d", r.score), 4, 4)
+		common.DrawText(screen, fmt.Sprintf("lives %d", r.player.lives), 130, 4)
 	case gameOverGameState:
 		r.player.Draw(screen)
 		for _, b := range r.bullets {
@@ -217,6 +220,10 @@ func (r *Game) RemoveAlien(alien *Alien) {
 		}
 	}
 	r.aliens = newAliens
+}
+
+func (r *Game) ScorePoint() {
+	r.score = r.score + 1
 }
 
 func (r *Game) drawImage(screen *ebiten.Image, img string, x float64, y float64) {
