@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"image"
 	"plutos-revenge/common"
 )
@@ -55,9 +56,9 @@ func (r *Player) Update(delta float64, game *Game) {
 		if r.shootTimer > 0 {
 			r.shootTimer = r.shootTimer - delta
 		}
-		if ebiten.IsKeyPressed(ebiten.KeySpace) {
+		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 			if r.shootTimer < 0 {
-				game.AddBullet(r.x, r.y-float64(r.size), -1)
+				game.AddBullet(r.x, r.y-float64(bulletSize+1), -1)
 				r.shootTimer = shootTimerAmount
 			}
 		}
@@ -71,7 +72,7 @@ func (r *Player) Update(delta float64, game *Game) {
 	case dyingState:
 		r.timer = r.timer - delta
 		if r.timer < 0 {
-			game.PlayerDeath()
+			game.GameOver()
 		}
 	}
 }

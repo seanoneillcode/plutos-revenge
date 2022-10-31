@@ -6,12 +6,12 @@ import (
 	"plutos-revenge/common"
 )
 
-const normalState = "normal"
-const hitState = "hit"
+const normalAlienState = "normal"
+const hitAlienState = "hit"
 
-const bulletSize = 12
+const alienSize = 12
 
-type Bullet struct {
+type Alien struct {
 	x      float64
 	y      float64
 	dir    int
@@ -24,33 +24,28 @@ type Bullet struct {
 	timer  float64
 }
 
-func NewBullet(x float64, y float64, dir int) *Bullet {
-	return &Bullet{
+func NewAlien(x float64, y float64, dir int) *Alien {
+	return &Alien{
 		x:     x,
 		y:     y,
 		dir:   dir,
 		image: "normal",
 		images: map[string]*ebiten.Image{
-			"normal":    common.LoadImage("bullet.png"),
+			"normal":    common.LoadImage("pluton.png"),
 			"explosion": common.LoadImage("explosion.png"),
 		},
-		state: normalState,
-		size:  bulletSize,
-		speed: 50,
+		state: normalAlienState,
+		size:  alienSize,
+		speed: 20,
 	}
 }
 
-func (r *Bullet) Update(delta float64, game *Game) {
+func (r *Alien) Update(delta float64, game *Game) {
 	switch r.state {
 	case normalState:
-		r.y = r.y + (float64(r.dir) * delta * r.speed)
-		// gone from top of screen
-		if r.y < (0 - float64(r.size)) {
-			game.RemoveBullet(r)
-		}
 		// gone from the bottom of the screen
 		if r.y > common.ScreenHeight+float64(r.size) {
-			game.RemoveBullet(r)
+			game.RemoveAlien(r)
 		}
 		// check if hit player
 		if game.player.state == playingState {
@@ -61,33 +56,22 @@ func (r *Bullet) Update(delta float64, game *Game) {
 			}
 		}
 
-		// check if hit alien
-		for index, a := range game.aliens {
-			if a.state == normalAlienState {
-				if common.Overlap(a.x, a.y, float64(a.size), r.x, r.y, float64(r.size)) {
-					r.state = hitState
-					game.aliens[index].GetHit()
-					r.GetHit()
-				}
-			}
-		}
-
 	case hitState:
 		r.timer = r.timer - delta
 		if r.timer < 0 {
-			game.RemoveBullet(r)
+			game.RemoveAlien(r)
 		}
 	}
 }
 
-func (r *Bullet) GetHit() {
-	r.state = hitState
+func (r *Alien) GetHit() {
+	r.state = hitAlienState
 	r.timer = 1.0
 	r.image = "explosion"
 	r.frame = 0
 }
 
-func (r *Bullet) Draw(screen *ebiten.Image) {
+func (r *Alien) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(r.x, r.y)
 	op.GeoM.Scale(common.Scale, common.Scale)
