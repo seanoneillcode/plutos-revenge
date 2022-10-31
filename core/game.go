@@ -32,6 +32,7 @@ func NewGame() *Game {
 		state: menuGameState,
 		images: map[string]*ebiten.Image{
 			"splash": common.LoadImage("splash.png"),
+			"earth":  common.LoadImage("earth.png"),
 		},
 	}
 }
@@ -113,6 +114,7 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		r.drawImage(screen, "splash", 40, 40)
 		common.DrawText(screen, "start game", 60, 120)
 	case playingGameState:
+		r.drawImage(screen, "earth", 0, common.ScreenHeight-24)
 		r.player.Draw(screen)
 		for _, b := range r.bullets {
 			b.Draw(screen)
