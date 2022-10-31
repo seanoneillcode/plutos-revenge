@@ -31,10 +31,7 @@ func NewGame() *Game {
 	return &Game{
 		state: menuGameState,
 		images: map[string]*ebiten.Image{
-			"game-over-text": common.LoadImage("game-over-text.png"),
-			"play-text":      common.LoadImage("play-text.png"),
-			"wave-done-text": common.LoadImage("wave-done-text.png"),
-			"game-won-text":  common.LoadImage("game-won-text.png"),
+			"splash": common.LoadImage("splash.png"),
 		},
 	}
 }
@@ -113,7 +110,8 @@ func (r *Game) Draw(screen *ebiten.Image) {
 
 	switch r.state {
 	case menuGameState:
-		r.drawImage(screen, "play-text", 40, 40)
+		r.drawImage(screen, "splash", 40, 40)
+		common.DrawText(screen, "start game", 60, 120)
 	case playingGameState:
 		r.player.Draw(screen)
 		for _, b := range r.bullets {
@@ -132,16 +130,17 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		for _, a := range r.aliens {
 			a.Draw(screen)
 		}
-		r.drawImage(screen, "game-over-text", 40, 40)
+		common.DrawText(screen, "game over", 60, 90)
 	case levelOverGameState:
 		r.player.Draw(screen)
 		for _, b := range r.bullets {
 			b.Draw(screen)
 		}
-		r.drawImage(screen, "wave-done-text", 40, 40)
+		common.DrawText(screen, "   wave\ndestroyed", 60, 90)
 	case gameWonGameState:
 		r.player.Draw(screen)
-		r.drawImage(screen, "game-won-text", 40, 40)
+		common.DrawText(screen, " you win!", 60, 70)
+		common.DrawText(screen, "the earth\nis saved!", 60, 120)
 	}
 
 }
