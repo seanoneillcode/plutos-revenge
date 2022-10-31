@@ -20,6 +20,7 @@ type Game struct {
 	bullets          []*Bullet
 	aliens           []*Alien
 	alienGroup       *AlienGroup
+	stars            []*Star
 	timer            float64
 	state            string
 	images           map[string]*ebiten.Image
@@ -28,18 +29,28 @@ type Game struct {
 }
 
 func NewGame() *Game {
-	return &Game{
+	g := &Game{
 		state: menuGameState,
 		images: map[string]*ebiten.Image{
 			"splash": common.LoadImage("splash.png"),
 			"earth":  common.LoadImage("earth.png"),
 		},
+		stars:            []*Star{},
+		lastUpdateCalled: time.Now(),
 	}
+	for index := 0; index < 100; index += 1 {
+		g.stars = append(g.stars, NewStar())
+	}
+	return g
 }
 
 func (r *Game) Update() error {
 	delta := float64(time.Now().Sub(r.lastUpdateCalled).Milliseconds()) / 1000
 	r.lastUpdateCalled = time.Now()
+
+	for _, s := range r.stars {
+		s.Update(delta)
+	}
 
 	switch r.state {
 	case menuGameState:
@@ -109,10 +120,14 @@ func (r *Game) Update() error {
 
 func (r *Game) Draw(screen *ebiten.Image) {
 
+	for _, s := range r.stars {
+		s.Draw(screen)
+	}
 	switch r.state {
 	case menuGameState:
 		r.drawImage(screen, "splash", 40, 40)
 		common.DrawText(screen, "start game", 60, 120)
+
 	case playingGameState:
 		r.drawImage(screen, "earth", 0, common.ScreenHeight-24)
 		r.player.Draw(screen)
@@ -134,12 +149,14 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		}
 		common.DrawText(screen, "game over", 60, 90)
 	case levelOverGameState:
+		r.drawImage(screen, "earth", 0, common.ScreenHeight-24)
 		r.player.Draw(screen)
 		for _, b := range r.bullets {
 			b.Draw(screen)
 		}
 		common.DrawText(screen, "   wave\ndestroyed", 60, 90)
 	case gameWonGameState:
+		r.drawImage(screen, "earth", 0, common.ScreenHeight-24)
 		r.player.Draw(screen)
 		common.DrawText(screen, " you win!", 60, 70)
 		common.DrawText(screen, "the earth\nis saved!", 60, 120)
