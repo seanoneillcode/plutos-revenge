@@ -22,9 +22,10 @@ type Bullet struct {
 	state  string
 	speed  float64
 	timer  float64
+	kind   string
 }
 
-func NewBullet(x float64, y float64, dir int) *Bullet {
+func NewBullet(x float64, y float64, dir int, kind string) *Bullet {
 	return &Bullet{
 		x:     x,
 		y:     y,
@@ -37,6 +38,7 @@ func NewBullet(x float64, y float64, dir int) *Bullet {
 		state: normalState,
 		size:  bulletSize,
 		speed: 50,
+		kind:  kind,
 	}
 }
 
@@ -52,22 +54,25 @@ func (r *Bullet) Update(delta float64, game *Game) {
 		if r.y > common.ScreenHeight+float64(r.size) {
 			game.RemoveBullet(r)
 		}
-		// check if hit player
-		if game.player.state == playingState {
-			if common.Overlap(game.player.x, game.player.y, float64(game.player.size), r.x, r.y, float64(r.size)) {
-				r.state = hitState
-				game.player.GetHit()
-				r.GetHit()
-			}
-		}
-
-		// check if hit alien
-		for index, a := range game.aliens {
-			if a.state == normalAlienState {
-				if common.Overlap(a.x, a.y, float64(a.size), r.x, r.y, float64(r.size)) {
+		switch r.kind {
+		case "alien":
+			// check if hit player
+			if game.player.state == playingState {
+				if common.Overlap(game.player.x, game.player.y, float64(game.player.size), r.x, r.y, float64(r.size)) {
 					r.state = hitState
-					game.aliens[index].GetHit()
+					game.player.GetHit()
 					r.GetHit()
+				}
+			}
+		case "player":
+			// check if hit alien
+			for index, a := range game.aliens {
+				if a.state == normalAlienState {
+					if common.Overlap(a.x, a.y, float64(a.size), r.x, r.y, float64(r.size)) {
+						r.state = hitState
+						game.aliens[index].GetHit()
+						r.GetHit()
+					}
 				}
 			}
 		}

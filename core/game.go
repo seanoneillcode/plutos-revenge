@@ -47,6 +47,9 @@ func (r *Game) Update() error {
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 			r.StartNewGame()
 		}
+		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			return common.NormalEscapeError
+		}
 	case playingGameState:
 		r.player.Update(delta, r)
 		for _, b := range r.bullets {
@@ -56,15 +59,10 @@ func (r *Game) Update() error {
 		for _, a := range r.aliens {
 			a.Update(delta, r)
 		}
-		//r.timer = r.timer + delta
-		//if r.timer > 1.5 {
-		//	r.timer = 0
-		//	r.AddBullet(90, 10, 1)
-		//}
-	case gameOverGameState:
-		if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
-			return common.NormalEscapeError
+		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			r.QuitToMenu()
 		}
+	case gameOverGameState:
 		for _, b := range r.bullets {
 			b.Update(delta, r)
 		}
@@ -72,10 +70,20 @@ func (r *Game) Update() error {
 		for _, a := range r.aliens {
 			a.Update(delta, r)
 		}
+		r.timer = r.timer - delta
+		if r.timer < 0 {
+			r.timer = 0
+			r.QuitToMenu()
+		}
+		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			r.QuitToMenu()
+		}
+		if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+			r.QuitToMenu()
+		}
 	case levelOverGameState:
 		r.timer = r.timer - delta
 		if r.timer < 0 {
-			fmt.Println("time exceeded")
 			r.timer = 0
 			r.StartNewLevel()
 		}
@@ -84,19 +92,15 @@ func (r *Game) Update() error {
 			b.Update(delta, r)
 		}
 	case gameWonGameState:
-		r.timer = r.timer - delta
-		if r.timer < 0 {
-			if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
-				r.StartNewGame()
-			}
-		}
 		r.player.Update(delta, r)
-
+		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			r.QuitToMenu()
+		}
+		if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+			r.QuitToMenu()
+		}
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
-		return common.NormalEscapeError
-	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
 		ebiten.SetFullscreen(!ebiten.IsFullscreen())
 	}
@@ -162,8 +166,17 @@ func (r *Game) StartNewLevel() {
 func (r *Game) GameOver() {
 	if r.state == playingGameState {
 		fmt.Println("game over")
+		r.timer = 6 // seconds
 		r.state = gameOverGameState
 	}
+}
+
+func (r *Game) QuitToMenu() {
+	r.state = menuGameState
+	r.player = nil
+	r.bullets = nil
+	r.aliens = nil
+	r.alienGroup = nil
 }
 
 func (r *Game) EndLevel() {
@@ -182,8 +195,8 @@ func (r *Game) WinGame() {
 	r.state = gameWonGameState
 }
 
-func (r *Game) AddBullet(x float64, y float64, dir int) {
-	r.bullets = append(r.bullets, NewBullet(x, y, dir))
+func (r *Game) AddBullet(x float64, y float64, dir int, kind string) {
+	r.bullets = append(r.bullets, NewBullet(x, y, dir, kind))
 }
 
 func (r *Game) RemoveBullet(bullet *Bullet) {

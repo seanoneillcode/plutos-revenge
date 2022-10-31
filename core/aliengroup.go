@@ -1,13 +1,18 @@
 package core
 
-import "plutos-revenge/common"
+import (
+	"math/rand"
+	"plutos-revenge/common"
+)
 
 type AlienGroup struct {
-	x       float64
-	y       float64
-	dir     int
-	targetY float64
-	speed   float64
+	x               float64
+	y               float64
+	dir             int
+	targetY         float64
+	speed           float64
+	timer           float64
+	nextTimerAmount float64
 }
 
 func NewAlienGroup(game *Game, numberOfAliens int) *AlienGroup {
@@ -15,7 +20,7 @@ func NewAlienGroup(game *Game, numberOfAliens int) *AlienGroup {
 		x:     alienSize,
 		y:     alienSize,
 		dir:   1,
-		speed: 20,
+		speed: 10,
 	}
 	// add the aliens
 	x := alienSize + 6
@@ -74,6 +79,15 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 				alien.x = alien.x + (float64(r.dir) * delta * r.speed)
 			}
 		}
+	}
+	// shooting
+	r.timer = r.timer + delta
+	if r.timer > r.nextTimerAmount {
+		r.timer = 0
+		r.nextTimerAmount = 0.5 + (rand.Float64() * 2)
+		randIndex := rand.Intn(len(game.aliens))
+		randAlien := game.aliens[randIndex]
+		game.AddBullet(randAlien.x, randAlien.y+alienSize, 1, "alien")
 	}
 }
 

@@ -32,7 +32,7 @@ func NewPlayer() *Player {
 		image:      "playing",
 		state:      playingState,
 		y:          200,
-		speed:      60,
+		speed:      80,
 		size:       12,
 		lives:      3,
 		shootTimer: -1,
@@ -58,7 +58,7 @@ func (r *Player) Update(delta float64, game *Game) {
 		}
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 			if r.shootTimer < 0 {
-				game.AddBullet(r.x, r.y-float64(bulletSize+1), -1)
+				game.AddBullet(r.x, r.y-float64(bulletSize+1), -1, "player")
 				r.shootTimer = shootTimerAmount
 			}
 		}
