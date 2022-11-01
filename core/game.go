@@ -22,6 +22,7 @@ type Game struct {
 	alienGroup       *AlienGroup
 	stars            []*Star
 	effects          []*Animation
+	earth            *Earth
 	timer            float64
 	state            string
 	images           map[string]*ebiten.Image
@@ -34,10 +35,10 @@ func NewGame() *Game {
 		state: menuGameState,
 		images: map[string]*ebiten.Image{
 			"splash":    common.LoadImage("splash.png"),
-			"earth":     common.LoadImage("earth.png"),
 			"explosion": common.LoadImage("explosion.png"),
 		},
 		stars:            []*Star{},
+		earth:            NewEarth(),
 		lastUpdateCalled: time.Now(),
 	}
 	for index := 0; index < 100; index += 1 {
@@ -113,6 +114,7 @@ func (r *Game) Update() error {
 		}
 	}
 
+	r.earth.Update(delta)
 	for _, e := range r.effects {
 		e.Update(delta)
 	}
@@ -134,7 +136,7 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		r.drawImage(screen, "splash", 40, 40)
 		common.DrawText(screen, "start game", 60, 120)
 	case playingGameState:
-		r.drawImage(screen, "earth", 0, common.ScreenHeight-24)
+		r.earth.Draw(screen)
 		r.player.Draw(screen)
 		for _, b := range r.bullets {
 			b.Draw(screen)
@@ -148,6 +150,7 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		common.DrawText(screen, fmt.Sprintf("score %d", r.score), 4, 4)
 		common.DrawText(screen, fmt.Sprintf("lives %d", r.player.lives), 130, 4)
 	case gameOverGameState:
+		r.earth.Draw(screen)
 		r.player.Draw(screen)
 		for _, b := range r.bullets {
 			b.Draw(screen)
@@ -160,7 +163,7 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		}
 		common.DrawText(screen, "game over", 60, 90)
 	case levelOverGameState:
-		r.drawImage(screen, "earth", 0, common.ScreenHeight-24)
+		r.earth.Draw(screen)
 		r.player.Draw(screen)
 		for _, b := range r.bullets {
 			b.Draw(screen)
@@ -170,7 +173,7 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		}
 		common.DrawText(screen, "   wave\ndestroyed", 60, 90)
 	case gameWonGameState:
-		r.drawImage(screen, "earth", 0, common.ScreenHeight-24)
+		r.earth.Draw(screen)
 		r.player.Draw(screen)
 		for _, e := range r.effects {
 			e.Draw(screen)
@@ -185,105 +188,9 @@ func (r *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return common.ScreenWidth * common.Scale, common.ScreenHeight * common.Scale
 }
 
-func (r *Game) StartNewGame() {
-	r.effects = []*Animation{}
-	fmt.Println("starting new game")
-	r.bullets = []*Bullet{}
-	r.aliens = []*Alien{}
-	r.alienGroup = NewAlienGroup(r, 10)
-	r.player = NewPlayer()
-	r.state = playingGameState
-}
-
-func (r *Game) StartNewLevel() {
-	r.effects = []*Animation{}
-	r.level = r.level + 1
-	r.aliens = []*Alien{}
-	r.alienGroup = NewAlienGroup(r, 5*(r.level+2))
-	r.state = playingGameState
-}
-
-func (r *Game) GameOver() {
-	if r.state == playingGameState {
-		fmt.Println("game over")
-		r.timer = 6 // seconds
-		r.state = gameOverGameState
-	}
-}
-
-func (r *Game) QuitToMenu() {
-	r.state = menuGameState
-	r.player = nil
-	r.bullets = nil
-	r.aliens = nil
-	r.alienGroup = nil
-}
-
-func (r *Game) EndLevel() {
-	if r.level == 1 {
-		r.WinGame()
-		return
-	}
-	if r.state == playingGameState {
-		fmt.Println("ending level")
-		r.state = levelOverGameState
-		r.timer = 3.0
-	}
-}
-
-func (r *Game) WinGame() {
-	r.state = gameWonGameState
-}
-
-func (r *Game) AddBullet(x float64, y float64, dir int, kind string) {
-	r.bullets = append(r.bullets, NewBullet(x, y, dir, kind))
-}
-
-func (r *Game) RemoveBullet(bullet *Bullet) {
-	var newBullets []*Bullet
-	for _, b := range r.bullets {
-		if b != bullet {
-			newBullets = append(newBullets, b)
-		}
-	}
-	r.bullets = newBullets
-}
-
-func (r *Game) RemoveAlien(alien *Alien) {
-	var newAliens []*Alien
-	for _, a := range r.aliens {
-		if a != alien {
-			newAliens = append(newAliens, a)
-		}
-	}
-	r.aliens = newAliens
-}
-
-func (r *Game) ScorePoint() {
-	r.score = r.score + 1
-}
-
 func (r *Game) drawImage(screen *ebiten.Image, img string, x float64, y float64) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(x, y)
 	op.GeoM.Scale(common.Scale, common.Scale)
 	screen.DrawImage(r.images[img], op)
-}
-
-func (r *Game) AddAlien(alien *Alien) {
-	r.aliens = append(r.aliens, alien)
-}
-
-func (r *Game) AddEffect(x float64, y float64, kind string) {
-	switch kind {
-	case "explosion":
-		r.effects = append(r.effects, &Animation{
-			numFrames:       8,
-			frameTimeAmount: 0.06,
-			image:           r.images["explosion"],
-			size:            12,
-			x:               x,
-			y:               y,
-		})
-	}
 }

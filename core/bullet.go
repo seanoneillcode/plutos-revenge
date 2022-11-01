@@ -9,36 +9,47 @@ import (
 const normalState = "normal"
 const hitState = "hit"
 
-const bulletSize = 12
+const bulletSize = 4
 
 type Bullet struct {
-	x      float64
-	y      float64
-	dir    int
-	image  string
-	images map[string]*ebiten.Image
-	frame  int
-	size   int
-	state  string
-	speed  float64
-	timer  float64
-	kind   string
+	x         float64
+	y         float64
+	dir       int
+	image     string
+	images    map[string]*ebiten.Image
+	imageSize int
+	frame     int
+	size      int
+	offsetX   float64
+	offsetY   float64
+	state     string
+	speed     float64
+	timer     float64
+	kind      string
 }
 
 func NewBullet(x float64, y float64, dir int, kind string) *Bullet {
-	return &Bullet{
+	b := &Bullet{
 		x:     x,
 		y:     y,
 		dir:   dir,
-		image: "normal",
+		image: "bullet",
 		images: map[string]*ebiten.Image{
-			"normal": common.LoadImage("bullet.png"),
+			"bullet": common.LoadImage("bullet.png"),
+			"lazer":  common.LoadImage("lazer.png"),
 		},
-		state: normalState,
-		size:  bulletSize,
-		speed: 60,
-		kind:  kind,
+		state:     normalState,
+		size:      bulletSize,
+		imageSize: 8,
+		offsetX:   -2,
+		offsetY:   -4,
+		speed:     60,
+		kind:      kind,
 	}
+	if kind == "alien" {
+		b.image = "lazer"
+	}
+	return b
 }
 
 func (r *Bullet) Update(delta float64, game *Game) {
@@ -96,8 +107,14 @@ func (r *Bullet) GetHit() {
 func (r *Bullet) Draw(screen *ebiten.Image) {
 	if r.state == normalState {
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(r.x, r.y)
+		//if r.dir == 1 {
+		//	op.GeoM.Rotate(math.Pi)
+		//	op.GeoM.Translate(8, 8)
+		//}
+		op.GeoM.Translate(r.x+r.offsetX, r.y+r.offsetY)
 		op.GeoM.Scale(common.Scale, common.Scale)
-		screen.DrawImage(r.images[r.image].SubImage(image.Rect(r.frame*r.size, 0, (r.frame+1)*r.size, r.size)).(*ebiten.Image), op)
+
+		screen.DrawImage(r.images[r.image].SubImage(image.Rect(r.frame*r.imageSize, 0, (r.frame+1)*r.imageSize, r.imageSize)).(*ebiten.Image), op)
+		//ebitenutil.DrawRect(screen, r.x*common.Scale, r.y*common.Scale, float64(r.size)*common.Scale, float64(r.size)*common.Scale, colornames.Red)
 	}
 }

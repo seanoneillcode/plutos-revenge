@@ -50,6 +50,7 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 		game.EndLevel()
 		return
 	}
+	var numAlive = 0
 	if r.y < r.targetY {
 		// move down y
 		r.y = r.y + (delta * r.speed)
@@ -57,6 +58,7 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 			alien := game.aliens[index]
 			if alien.state == normalAlienState {
 				alien.y = alien.y + (delta * r.speed)
+				numAlive = numAlive + 1
 			}
 		}
 	} else {
@@ -76,13 +78,14 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 		for index := 0; index < len(game.aliens); index += 1 {
 			alien := game.aliens[index]
 			if alien.state == normalAlienState {
+				numAlive = numAlive + 1
 				alien.x = alien.x + (float64(r.dir) * delta * r.speed)
 			}
 		}
 	}
 	// shooting
 	r.timer = r.timer + delta
-	if r.timer > r.nextTimerAmount {
+	if r.timer > r.nextTimerAmount && numAlive > 0 {
 		r.timer = 0
 		r.nextTimerAmount = 0.5 + (rand.Float64() * 2)
 		randIndex := rand.Intn(len(game.aliens))
