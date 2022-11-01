@@ -82,7 +82,7 @@ func (r *Bullet) Update(delta float64, game *Game) {
 					if common.Overlap(a.x, a.y, float64(a.size), r.x, r.y, float64(r.size)) {
 						r.state = hitState
 						game.aliens[index].GetHit()
-						game.AddEffect(game.aliens[index].x, game.aliens[index].y, "explosion")
+						game.AddEffect(game.aliens[index].x, game.aliens[index].y, "alien-death")
 						r.GetHit()
 						game.AddEffect(r.x, r.y, "explosion")
 						game.ScorePoint()

@@ -102,14 +102,23 @@ func (r *Game) AddEffect(x float64, y float64, kind string) {
 			frameTimeAmount: 0.06,
 			image:           r.images["explosion"],
 			size:            12,
-			x:               x,
-			y:               y,
+			x:               x - 4,
+			y:               y - 4,
 		})
 	case "player-death":
 		r.effects = append(r.effects, &Animation{
 			numFrames:       6,
 			frameTimeAmount: 0.06,
 			image:           r.images["player-death"],
+			size:            24,
+			x:               x - 6,
+			y:               y - 6,
+		})
+	case "alien-death":
+		r.effects = append(r.effects, &Animation{
+			numFrames:       6,
+			frameTimeAmount: 0.06,
+			image:           r.images["alien-death"],
 			size:            24,
 			x:               x - 6,
 			y:               y - 6,

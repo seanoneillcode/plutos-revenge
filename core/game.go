@@ -37,6 +37,7 @@ func NewGame() *Game {
 			"splash":       common.LoadImage("splash.png"),
 			"explosion":    common.LoadImage("explosion.png"),
 			"player-death": common.LoadImage("player-death.png"),
+			"alien-death":  common.LoadImage("pluton-death.png"),
 		},
 		stars:            []*Star{},
 		earth:            NewEarth(),

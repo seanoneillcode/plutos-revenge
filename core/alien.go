@@ -51,7 +51,7 @@ func (r *Alien) Update(delta float64, game *Game) {
 			if common.Overlap(game.player.x, game.player.y, float64(game.player.size), r.x, r.y, float64(r.size)) {
 				r.state = hitState
 				game.player.GetHit(game)
-				game.AddEffect(r.x, r.y, "explosion")
+				game.AddEffect(r.x, r.y, "alien-death")
 				r.GetHit()
 			}
 		}
