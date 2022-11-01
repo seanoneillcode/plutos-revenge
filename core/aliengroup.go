@@ -5,6 +5,8 @@ import (
 	"plutos-revenge/common"
 )
 
+const alienYTargetNormal = alienSize
+
 type AlienGroup struct {
 	x               float64
 	y               float64
@@ -17,8 +19,9 @@ type AlienGroup struct {
 
 func NewAlienGroup(game *Game, numberOfAliens int) *AlienGroup {
 	group := &AlienGroup{
-		x:     alienSize,
-		y:     24,
+		x: alienSize,
+		// put the group just out of the way above the screen
+		y:     float64((numberOfAliens / 5) * alienSize * -2),
 		dir:   1,
 		speed: 10,
 	}
@@ -38,6 +41,7 @@ func NewAlienGroup(game *Game, numberOfAliens int) *AlienGroup {
 			}
 		}
 	}
+	group.targetY = alienYTargetNormal
 	return group
 }
 
@@ -50,14 +54,18 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 		game.EndLevel()
 		return
 	}
+	actualSpeed := r.speed
+	if r.targetY == alienYTargetNormal {
+		actualSpeed = actualSpeed * 3
+	}
 	var numAlive = 0
 	if r.y < r.targetY {
 		// move down y
-		r.y = r.y + (delta * r.speed)
+		r.y = r.y + (delta * actualSpeed)
 		for index := 0; index < len(game.aliens); index += 1 {
 			alien := game.aliens[index]
 			if alien.state == normalAlienState {
-				alien.y = alien.y + (delta * r.speed)
+				alien.y = alien.y + (delta * actualSpeed)
 				numAlive = numAlive + 1
 			}
 		}

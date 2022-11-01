@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"image"
+	"math"
 	"plutos-revenge/common"
 )
 
@@ -13,10 +14,12 @@ const dyingState = "dying"
 const dyingTimeAmount = 0.8
 const shootTimerAmount = 0.5
 const moveFrameAmount = 0.04
+const playerYNormal = 200.0
 
 type Player struct {
 	x           float64
 	y           float64
+	targetY     float64
 	image       string
 	frame       int
 	frames      int
@@ -29,13 +32,17 @@ type Player struct {
 	lives       int
 	animTimer   float64
 	targetFrame int
+	moveYSpeed  float64
 }
 
 func NewPlayer() *Player {
 	p := &Player{
 		image:      "player",
 		state:      playingState,
-		y:          200,
+		y:          common.ScreenHeight,
+		x:          common.ScreenWidth / 2,
+		targetY:    playerYNormal,
+		moveYSpeed: 20,
 		speed:      80,
 		size:       12,
 		lives:      1,
@@ -100,6 +107,15 @@ func (r *Player) Update(delta float64, game *Game) {
 			game.GameOver()
 		}
 	}
+	if math.Abs(r.y-r.targetY) < (2 * r.moveYSpeed * delta) {
+		r.y = r.targetY
+	}
+	if r.y < r.targetY {
+		r.y = r.y + r.moveYSpeed*delta
+	}
+	if r.y > r.targetY {
+		r.y = r.y - r.moveYSpeed*delta
+	}
 }
 
 func (r *Player) Draw(screen *ebiten.Image) {
@@ -119,4 +135,8 @@ func (r *Player) GetHit(game *Game) {
 		r.timer = dyingTimeAmount
 		game.AddEffect(r.x, r.y, "explosion")
 	}
+}
+
+func (r *Player) Target(target float64) {
+	r.targetY = target
 }

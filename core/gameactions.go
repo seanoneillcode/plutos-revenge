@@ -14,6 +14,7 @@ func (r *Game) StartNewGame() {
 	r.player = NewPlayer()
 	r.state = playingGameState
 	r.earth.Target(common.ScreenHeight - 24)
+	r.player.Target(playerYNormal)
 }
 
 func (r *Game) StartNewLevel() {
@@ -30,7 +31,8 @@ func (r *Game) GameOver() {
 		r.timer = 6 // seconds
 		r.state = gameOverGameState
 	}
-	r.earth.Target(common.ScreenHeight)
+	r.player.Target(common.ScreenHeight)
+	r.alienGroup.targetY = common.ScreenHeight
 }
 
 func (r *Game) QuitToMenu() {
@@ -55,6 +57,8 @@ func (r *Game) EndLevel() {
 
 func (r *Game) WinGame() {
 	r.state = gameWonGameState
+	r.player.Target(-common.ScreenHeight)
+	r.earth.Target(common.ScreenHeight)
 }
 
 func (r *Game) AddBullet(x float64, y float64, dir int, kind string) {
