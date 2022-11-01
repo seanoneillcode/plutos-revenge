@@ -41,6 +41,7 @@ func (r *Game) QuitToMenu() {
 	r.bullets = nil
 	r.aliens = nil
 	r.alienGroup = nil
+	r.earth.y = common.ScreenHeight
 }
 
 func (r *Game) EndLevel() {
@@ -103,6 +104,15 @@ func (r *Game) AddEffect(x float64, y float64, kind string) {
 			size:            12,
 			x:               x,
 			y:               y,
+		})
+	case "player-death":
+		r.effects = append(r.effects, &Animation{
+			numFrames:       6,
+			frameTimeAmount: 0.06,
+			image:           r.images["player-death"],
+			size:            24,
+			x:               x - 6,
+			y:               y - 6,
 		})
 	}
 }

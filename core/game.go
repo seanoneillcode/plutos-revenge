@@ -34,8 +34,9 @@ func NewGame() *Game {
 	g := &Game{
 		state: menuGameState,
 		images: map[string]*ebiten.Image{
-			"splash":    common.LoadImage("splash.png"),
-			"explosion": common.LoadImage("explosion.png"),
+			"splash":       common.LoadImage("splash.png"),
+			"explosion":    common.LoadImage("explosion.png"),
+			"player-death": common.LoadImage("player-death.png"),
 		},
 		stars:            []*Star{},
 		earth:            NewEarth(),

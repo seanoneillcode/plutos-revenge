@@ -42,7 +42,7 @@ func NewPlayer() *Player {
 		y:          common.ScreenHeight,
 		x:          common.ScreenWidth / 2,
 		targetY:    playerYNormal,
-		moveYSpeed: 20,
+		moveYSpeed: 40,
 		speed:      80,
 		size:       12,
 		lives:      1,
@@ -133,7 +133,7 @@ func (r *Player) GetHit(game *Game) {
 	if r.lives < 0 {
 		r.state = dyingState
 		r.timer = dyingTimeAmount
-		game.AddEffect(r.x, r.y, "explosion")
+		game.AddEffect(r.x, r.y, "player-death")
 	}
 }
 
