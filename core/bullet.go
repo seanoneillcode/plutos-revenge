@@ -43,7 +43,7 @@ func NewBullet(x float64, y float64, dir int, kind string) *Bullet {
 		imageSize: 8,
 		offsetX:   -2,
 		offsetY:   -4,
-		speed:     100,
+		speed:     120,
 		kind:      kind,
 	}
 	if kind == "alien" {
@@ -66,7 +66,7 @@ func (r *Bullet) Update(delta float64, game *Game) {
 		}
 		for _, b := range game.bullets {
 			if b.state == normalState && b != r {
-				if common.Overlap(b.x, b.y, float64(b.size), r.x, r.y, float64(r.size)) {
+				if common.Overlap(b.x, b.y, float64(b.size-1), r.x, r.y, float64(r.size)) {
 					r.state = hitState
 					b.GetHit()
 					game.AddEffect(b.x, b.y, "explosion")
@@ -86,17 +86,36 @@ func (r *Bullet) Update(delta float64, game *Game) {
 					r.GetHit()
 				}
 			}
+			for _, a := range game.blocks {
+				if a.lives > 0 {
+					if common.Overlap(a.x, a.y, float64(a.size), r.x, r.y, float64(r.size)) {
+						a.GetHit(game)
+						r.state = hitState
+						r.GetHit()
+						game.AddEffect(r.x, r.y, "explosion")
+					}
+				}
+			}
 		case "player":
 			// check if hit alien
-			for index, a := range game.aliens {
+			for _, a := range game.aliens {
 				if a.state == normalAlienState {
 					if common.Overlap(a.x, a.y, float64(a.size), r.x, r.y, float64(r.size)) {
 						r.state = hitState
-						game.aliens[index].GetHit()
-						game.AddEffect(game.aliens[index].x, game.aliens[index].y, "alien-death")
+						a.GetHit()
+						game.AddEffect(a.x, a.y, "alien-death")
 						r.GetHit()
 						game.AddEffect(r.x, r.y, "explosion")
 						game.ScorePoint()
+					}
+				}
+			}
+			for _, a := range game.blocks {
+				if a.lives > 0 {
+					if common.Overlap(a.x, a.y, float64(a.size-1), r.x, r.y, float64(r.size-1)) {
+						r.state = hitState
+						r.GetHit()
+						game.AddEffect(r.x, r.y, "explosion")
 					}
 				}
 			}

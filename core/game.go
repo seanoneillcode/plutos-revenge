@@ -14,11 +14,14 @@ const gameOverGameState = "gameOver"
 const levelOverGameState = "levelOver"
 const gameWonGameState = "gameWon"
 
+const numberOfLevels = 4
+
 type Game struct {
 	lastUpdateCalled time.Time
 	player           *Player
 	bullets          []*Bullet
 	aliens           []*Alien
+	blocks           []*Block
 	alienGroup       *AlienGroup
 	stars            []*Star
 	effects          []*Animation
@@ -76,6 +79,9 @@ func (r *Game) Update() error {
 		for _, a := range r.aliens {
 			a.Update(delta, r)
 		}
+		for _, b := range r.blocks {
+			b.Update(delta, r)
+		}
 		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 			r.QuitToMenu()
 		}
@@ -121,6 +127,9 @@ func (r *Game) Update() error {
 	r.earth.Update(delta)
 	for _, e := range r.effects {
 		e.Update(delta)
+		if e.done {
+			r.RemoveAnimation(e)
+		}
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
@@ -148,6 +157,9 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		for _, a := range r.aliens {
 			a.Draw(screen)
 		}
+		for _, b := range r.blocks {
+			b.Draw(screen)
+		}
 		for _, e := range r.effects {
 			e.Draw(screen)
 		}
@@ -162,6 +174,9 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		for _, a := range r.aliens {
 			a.Draw(screen)
 		}
+		for _, b := range r.blocks {
+			b.Draw(screen)
+		}
 		for _, e := range r.effects {
 			e.Draw(screen)
 		}
@@ -170,6 +185,9 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		r.earth.Draw(screen)
 		r.player.Draw(screen)
 		for _, b := range r.bullets {
+			b.Draw(screen)
+		}
+		for _, b := range r.blocks {
 			b.Draw(screen)
 		}
 		for _, e := range r.effects {

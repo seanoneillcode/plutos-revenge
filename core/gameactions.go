@@ -10,6 +10,11 @@ func (r *Game) StartNewGame() {
 	fmt.Println("starting new game")
 	r.bullets = []*Bullet{}
 	r.aliens = []*Alien{}
+	r.blocks = []*Block{
+		NewBlock(30),
+		NewBlock(90),
+		NewBlock(150),
+	}
 	r.alienGroup = NewAlienGroup(r, 10)
 	r.player = NewPlayer()
 	r.state = playingGameState
@@ -24,6 +29,11 @@ func (r *Game) StartNewLevel() {
 	r.aliens = []*Alien{}
 	r.alienGroup = NewAlienGroup(r, 5*(r.level+2))
 	r.state = playingGameState
+	r.blocks = []*Block{
+		NewBlock(30),
+		NewBlock(90),
+		NewBlock(150),
+	}
 }
 
 func (r *Game) GameOver() {
@@ -34,6 +44,9 @@ func (r *Game) GameOver() {
 	}
 	r.player.Target(common.ScreenHeight)
 	r.alienGroup.targetY = common.ScreenHeight
+	for _, b := range r.blocks {
+		b.GetDestroyed(r)
+	}
 }
 
 func (r *Game) QuitToMenu() {
@@ -46,7 +59,7 @@ func (r *Game) QuitToMenu() {
 }
 
 func (r *Game) EndLevel() {
-	if r.level == 1 {
+	if r.level == numberOfLevels {
 		r.WinGame()
 		return
 	}
@@ -77,6 +90,16 @@ func (r *Game) RemoveBullet(bullet *Bullet) {
 	r.bullets = newBullets
 }
 
+func (r *Game) RemoveAnimation(animation *Animation) {
+	var animations []*Animation
+	for _, b := range r.effects {
+		if b != animation {
+			animations = append(animations, b)
+		}
+	}
+	r.effects = animations
+}
+
 func (r *Game) RemoveAlien(alien *Alien) {
 	var newAliens []*Alien
 	for _, a := range r.aliens {
@@ -85,6 +108,7 @@ func (r *Game) RemoveAlien(alien *Alien) {
 		}
 	}
 	r.aliens = newAliens
+	r.alienGroup.SpeedUp()
 }
 
 func (r *Game) ScorePoint() {

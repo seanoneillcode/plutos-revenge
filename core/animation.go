@@ -16,6 +16,7 @@ type Animation struct {
 	size            int
 	x               float64
 	y               float64
+	done            bool
 }
 
 func (r *Animation) Update(delta float64) {
@@ -28,6 +29,7 @@ func (r *Animation) Update(delta float64) {
 				r.frame = 0
 			} else {
 				r.frame = r.numFrames - 1
+				r.done = true
 			}
 		}
 	}
