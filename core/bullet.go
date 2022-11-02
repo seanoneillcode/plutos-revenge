@@ -43,7 +43,7 @@ func NewBullet(x float64, y float64, dir int, kind string) *Bullet {
 		imageSize: 8,
 		offsetX:   -2,
 		offsetY:   -4,
-		speed:     60,
+		speed:     100,
 		kind:      kind,
 	}
 	if kind == "alien" {
@@ -63,6 +63,17 @@ func (r *Bullet) Update(delta float64, game *Game) {
 		// gone from the bottom of the screen
 		if r.y > common.ScreenHeight+float64(r.size) {
 			game.RemoveBullet(r)
+		}
+		for _, b := range game.bullets {
+			if b.state == normalState && b != r {
+				if common.Overlap(b.x, b.y, float64(b.size), r.x, r.y, float64(r.size)) {
+					r.state = hitState
+					b.GetHit()
+					game.AddEffect(b.x, b.y, "explosion")
+					r.GetHit()
+					game.AddEffect(r.x, r.y, "explosion")
+				}
+			}
 		}
 		switch r.kind {
 		case "alien":
@@ -107,14 +118,8 @@ func (r *Bullet) GetHit() {
 func (r *Bullet) Draw(screen *ebiten.Image) {
 	if r.state == normalState {
 		op := &ebiten.DrawImageOptions{}
-		//if r.dir == 1 {
-		//	op.GeoM.Rotate(math.Pi)
-		//	op.GeoM.Translate(8, 8)
-		//}
 		op.GeoM.Translate(r.x+r.offsetX, r.y+r.offsetY)
 		op.GeoM.Scale(common.Scale, common.Scale)
-
 		screen.DrawImage(r.images[r.image].SubImage(image.Rect(r.frame*r.imageSize, 0, (r.frame+1)*r.imageSize, r.imageSize)).(*ebiten.Image), op)
-		//ebitenutil.DrawRect(screen, r.x*common.Scale, r.y*common.Scale, float64(r.size)*common.Scale, float64(r.size)*common.Scale, colornames.Red)
 	}
 }

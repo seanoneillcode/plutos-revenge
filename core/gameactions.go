@@ -15,6 +15,7 @@ func (r *Game) StartNewGame() {
 	r.state = playingGameState
 	r.earth.Target(common.ScreenHeight - 24)
 	r.player.Target(playerYNormal)
+	r.score = 0
 }
 
 func (r *Game) StartNewLevel() {

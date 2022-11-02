@@ -1,6 +1,7 @@
 package core
 
 import (
+	"math"
 	"math/rand"
 	"plutos-revenge/common"
 )
@@ -50,7 +51,8 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 		game.GameOver()
 		return
 	}
-	if len(game.aliens) == 0 {
+	numAliens := len(game.aliens)
+	if numAliens == 0 {
 		game.EndLevel()
 		return
 	}
@@ -62,7 +64,7 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 	if r.y < r.targetY {
 		// move down y
 		r.y = r.y + (delta * actualSpeed)
-		for index := 0; index < len(game.aliens); index += 1 {
+		for index := 0; index < numAliens; index += 1 {
 			alien := game.aliens[index]
 			if alien.state == normalAlienState {
 				alien.y = alien.y + (delta * actualSpeed)
@@ -73,12 +75,24 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 		// move across x
 		r.x = r.x + (float64(r.dir) * delta * r.speed)
 		if r.dir == 1 {
-			if r.x > (53 + alienSize) {
+			hitEdge := false
+			for _, a := range game.aliens {
+				if a.x+float64(a.size) > common.ScreenWidth {
+					hitEdge = true
+				}
+			}
+			if hitEdge {
 				r.dir = -1
 				r.moveDown(game.aliens)
 			}
 		} else {
-			if r.x < 0 {
+			hitEdge := false
+			for _, a := range game.aliens {
+				if a.x < 0 {
+					hitEdge = true
+				}
+			}
+			if hitEdge {
 				r.dir = 1
 				r.moveDown(game.aliens)
 			}
@@ -95,10 +109,20 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 	r.timer = r.timer + delta
 	if r.timer > r.nextTimerAmount && numAlive > 0 {
 		r.timer = 0
-		r.nextTimerAmount = 0.5 + (rand.Float64() * 2)
-		randIndex := rand.Intn(len(game.aliens))
-		randAlien := game.aliens[randIndex]
-		game.AddBullet(randAlien.x, randAlien.y+alienSize, 1, "alien")
+		r.nextTimerAmount = 0.5 + (rand.Float64() * 2) - (0.1 * float64(numAliens))
+		r.nextTimerAmount = math.Max(r.nextTimerAmount, 0.2)
+		randIndex := rand.Intn(numAliens)
+		shootingAlien := game.aliens[randIndex]
+		// 50% to try shoot player directly
+		if rand.Float64() > 0.5 {
+			for _, a := range game.aliens {
+				if a.x > game.player.x-4 && a.x < game.player.x+float64(game.player.size+4) {
+					shootingAlien = a
+					break
+				}
+			}
+		}
+		game.AddBullet(shootingAlien.x, shootingAlien.y+alienSize, 1, "alien")
 	}
 }
 

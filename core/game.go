@@ -23,6 +23,7 @@ type Game struct {
 	stars            []*Star
 	effects          []*Animation
 	earth            *Earth
+	fader            *Fader
 	timer            float64
 	state            string
 	images           map[string]*ebiten.Image
@@ -40,6 +41,7 @@ func NewGame() *Game {
 			"alien-death":  common.LoadImage("pluton-death.png"),
 		},
 		stars:            []*Star{},
+		fader:            NewFader(),
 		earth:            NewEarth(),
 		lastUpdateCalled: time.Now(),
 	}
