@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"plutos-revenge/common"
@@ -152,5 +151,4 @@ func (r *AlienGroup) moveDown(aliens []*Alien) {
 
 func (r *AlienGroup) SpeedUp() {
 	r.speed = r.speed + (r.speedIncrease * 50)
-	fmt.Printf("speed: %v\n", r.speed)
 }

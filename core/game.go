@@ -27,6 +27,7 @@ type Game struct {
 	effects          []*Animation
 	earth            *Earth
 	fader            *Fader
+	mystery          *Mystery
 	timer            float64
 	state            string
 	images           map[string]*ebiten.Image
@@ -47,6 +48,7 @@ func NewGame() *Game {
 		fader:            NewFader(),
 		earth:            NewEarth(),
 		lastUpdateCalled: time.Now(),
+		mystery:          NewMystery(common.ScreenWidth, 8, 1),
 	}
 	for index := 0; index < 100; index += 1 {
 		g.stars = append(g.stars, NewStar())
@@ -71,6 +73,7 @@ func (r *Game) Update() error {
 			return common.NormalEscapeError
 		}
 	case playingGameState:
+		r.mystery.Update(delta)
 		r.player.Update(delta, r)
 		for _, b := range r.bullets {
 			b.Update(delta, r)
@@ -89,6 +92,7 @@ func (r *Game) Update() error {
 		for _, b := range r.bullets {
 			b.Update(delta, r)
 		}
+		r.mystery.Update(delta)
 		r.alienGroup.Update(delta, r)
 		for _, a := range r.aliens {
 			a.Update(delta, r)
@@ -154,6 +158,7 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		for _, b := range r.bullets {
 			b.Draw(screen)
 		}
+		r.mystery.Draw(screen)
 		for _, a := range r.aliens {
 			a.Draw(screen)
 		}
@@ -171,6 +176,7 @@ func (r *Game) Draw(screen *ebiten.Image) {
 		for _, b := range r.bullets {
 			b.Draw(screen)
 		}
+		r.mystery.Draw(screen)
 		for _, a := range r.aliens {
 			a.Draw(screen)
 		}

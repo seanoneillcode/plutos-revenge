@@ -119,6 +119,14 @@ func (r *Bullet) Update(delta float64, game *Game) {
 					}
 				}
 			}
+			if game.mystery.active {
+				if common.Overlap(game.mystery.x, game.mystery.y, float64(game.mystery.size), r.x, r.y, float64(r.size)) {
+					r.state = hitState
+					game.mystery.GetHit(*game)
+					game.AddEffect(r.x, r.y, "explosion")
+					r.GetHit()
+				}
+			}
 		}
 
 	case hitState:
