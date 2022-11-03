@@ -6,6 +6,8 @@ import (
 	"plutos-revenge/common"
 )
 
+const mysteryTimerAmount = 10 // mysteryTimerAmount
+
 type Mystery struct {
 	x      float64
 	y      float64
@@ -14,22 +16,26 @@ type Mystery struct {
 	size   float64
 	timer  float64
 	active bool
+	speed  float64
 }
 
 func NewMystery(x float64, y float64, dir int) *Mystery {
-	return &Mystery{
+	m := &Mystery{
 		x:     x,
 		y:     y,
 		dir:   dir,
 		image: common.LoadImage("mystery.png"),
 		size:  alienSize,
+		speed: 40,
 	}
+	m.reset()
+	return m
 }
 
 func (r *Mystery) Update(delta float64) {
 
 	if r.active {
-		r.x = r.x + (30 * delta * float64(r.dir))
+		r.x = r.x + (r.speed * delta * float64(r.dir))
 		// gone from the side of the screen
 		if r.x > common.ScreenWidth {
 			r.reset()
@@ -52,16 +58,15 @@ func (r *Mystery) Update(delta float64) {
 
 }
 
-func (r *Mystery) GetHit(game Game) {
-	r.reset()
-	game.AddEffect(r.x, r.y, "explosion")
+func (r *Mystery) GetHit(game *Game) {
 	game.player.lives += 1
+	r.reset()
 }
 
 func (r *Mystery) reset() {
 	r.active = false
 	r.x = common.ScreenWidth
-	r.timer = rand.Float64()*20 + 20
+	r.timer = rand.Float64()*mysteryTimerAmount + mysteryTimerAmount
 }
 
 func (r *Mystery) Draw(screen *ebiten.Image) {

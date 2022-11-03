@@ -45,7 +45,7 @@ func NewPlayer() *Player {
 		moveYSpeed: 40,
 		speed:      80,
 		size:       12,
-		lives:      1,
+		lives:      2,
 		shootTimer: -1,
 		images: map[string]*ebiten.Image{
 			"player": common.LoadImage("player.png"),

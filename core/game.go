@@ -43,6 +43,7 @@ func NewGame() *Game {
 			"explosion":    common.LoadImage("explosion.png"),
 			"player-death": common.LoadImage("player-death.png"),
 			"alien-death":  common.LoadImage("pluton-death.png"),
+			"plus-one":     common.LoadImage("plus-one.png"),
 		},
 		stars:            []*Star{},
 		fader:            NewFader(),
@@ -114,6 +115,7 @@ func (r *Game) Update() error {
 			r.timer = 0
 			r.StartNewLevel()
 		}
+		r.mystery.Update(delta)
 		r.player.Update(delta, r)
 		for _, b := range r.bullets {
 			b.Update(delta, r)
@@ -190,6 +192,7 @@ func (r *Game) Draw(screen *ebiten.Image) {
 	case levelOverGameState:
 		r.earth.Draw(screen)
 		r.player.Draw(screen)
+		r.mystery.Draw(screen)
 		for _, b := range r.bullets {
 			b.Draw(screen)
 		}

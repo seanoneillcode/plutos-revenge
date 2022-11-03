@@ -21,6 +21,7 @@ func (r *Game) StartNewGame() {
 	r.earth.Target(common.ScreenHeight - 24)
 	r.player.Target(playerYNormal)
 	r.score = 0
+	r.level = 0
 }
 
 func (r *Game) StartNewLevel() {
@@ -147,6 +148,15 @@ func (r *Game) AddEffect(x float64, y float64, kind string) {
 			size:            24,
 			x:               x - 6,
 			y:               y - 6,
+		})
+	case "plus-one":
+		r.effects = append(r.effects, &Animation{
+			numFrames:       6,
+			frameTimeAmount: 0.1,
+			image:           r.images["plus-one"],
+			size:            12,
+			x:               x,
+			y:               y,
 		})
 	}
 }
