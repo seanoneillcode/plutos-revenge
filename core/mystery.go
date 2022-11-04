@@ -32,7 +32,7 @@ func NewMystery(x float64, y float64, dir int) *Mystery {
 	return m
 }
 
-func (r *Mystery) Update(delta float64) {
+func (r *Mystery) Update(delta float64, game *Game) {
 
 	if r.active {
 		r.x = r.x + (r.speed * delta * float64(r.dir))
@@ -46,6 +46,7 @@ func (r *Mystery) Update(delta float64) {
 	} else {
 		r.timer = r.timer - delta
 		if r.timer < 0 {
+			game.PlaySound("mystery-entrance")
 			r.active = true
 			r.x = common.ScreenWidth
 			r.dir = -1
@@ -61,6 +62,7 @@ func (r *Mystery) Update(delta float64) {
 func (r *Mystery) GetHit(game *Game) {
 	game.player.lives += 1
 	r.reset()
+	game.PlaySound("pickup")
 }
 
 func (r *Mystery) reset() {

@@ -120,23 +120,20 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 		randIndex := rand.Intn(numAliens)
 		shootingAlien := game.aliens[randIndex]
 		if shootingAlien.state == hitState {
-			for _, a := range game.aliens {
-				if a.state == normalAlienState {
-					shootingAlien = a
-					continue
-				}
-			}
+			// don't shoot!
+			return
 		}
 		// 50% to try shoot player directly
 		if rand.Float64() > 0.7 {
 			for _, a := range game.aliens {
-				if a.x > game.player.x-4 && a.x < game.player.x+float64(game.player.size+4) {
+				if a.state == normalAlienState && a.x > game.player.x-4 && a.x < game.player.x+float64(game.player.size+4) {
 					shootingAlien = a
 					break
 				}
 			}
 		}
 		game.AddBullet(shootingAlien.x, shootingAlien.y+alienSize, 1, "alien")
+		game.PlaySound("alien-shoot")
 	}
 }
 

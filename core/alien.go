@@ -52,7 +52,7 @@ func (r *Alien) Update(delta float64, game *Game) {
 				r.state = hitState
 				game.player.GetHit(game)
 				game.AddEffect(r.x, r.y, "alien-death")
-				r.GetHit()
+				r.GetHit(game)
 			}
 		}
 
@@ -64,9 +64,10 @@ func (r *Alien) Update(delta float64, game *Game) {
 	}
 }
 
-func (r *Alien) GetHit() {
+func (r *Alien) GetHit(game *Game) {
 	r.state = hitAlienState
 	r.timer = 1.0
+	game.PlaySound("alien-hurt")
 }
 
 func (r *Alien) Draw(screen *ebiten.Image) {

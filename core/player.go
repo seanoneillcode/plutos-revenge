@@ -92,6 +92,7 @@ func (r *Player) Update(delta float64, game *Game) {
 			if r.shootTimer < 0 {
 				game.AddBullet(r.x, r.y-float64(bulletSize+1), -1, "player")
 				r.shootTimer = shootTimerAmount
+				game.PlaySound("player-shoot")
 			}
 		}
 		r.x = r.x + (float64(inputX) * delta * r.speed)
@@ -134,6 +135,9 @@ func (r *Player) GetHit(game *Game) {
 		r.state = dyingState
 		r.timer = dyingTimeAmount
 		game.AddEffect(r.x, r.y, "player-death")
+		game.PlaySound("player-death")
+	} else {
+		game.PlaySound("blast")
 	}
 }
 

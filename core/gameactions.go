@@ -35,6 +35,7 @@ func (r *Game) StartNewLevel() {
 		NewBlock(90),
 		NewBlock(150),
 	}
+	r.PlaySound("level-start")
 }
 
 func (r *Game) GameOver() {
@@ -118,6 +119,10 @@ func (r *Game) ScorePoint() {
 
 func (r *Game) AddAlien(alien *Alien) {
 	r.aliens = append(r.aliens, alien)
+}
+
+func (r *Game) PlaySound(name string) {
+	r.soundManager.PlaySound(name)
 }
 
 func (r *Game) AddEffect(x float64, y float64, kind string) {

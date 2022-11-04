@@ -67,11 +67,11 @@ func (r *Bullet) Update(delta float64, game *Game) {
 		for _, b := range game.bullets {
 			if b.state == normalState && b != r {
 				if common.Overlap(b.x, b.y, float64(b.size-1), r.x, r.y, float64(r.size)) {
-					r.state = hitState
-					b.GetHit()
+					b.GetHit(game)
 					game.AddEffect(b.x, b.y, "explosion")
-					r.GetHit()
+					r.GetHit(game)
 					game.AddEffect(r.x, r.y, "explosion")
+					game.PlaySound("blast")
 				}
 			}
 		}
@@ -80,18 +80,16 @@ func (r *Bullet) Update(delta float64, game *Game) {
 			// check if hit player
 			if game.player.state == playingState {
 				if common.Overlap(game.player.x, game.player.y, float64(game.player.size), r.x, r.y, float64(r.size)) {
-					r.state = hitState
 					game.player.GetHit(game)
 					game.AddEffect(r.x, r.y, "explosion")
-					r.GetHit()
+					r.GetHit(game)
 				}
 			}
 			for _, a := range game.blocks {
 				if a.lives > 0 {
 					if common.Overlap(a.x, a.y, float64(a.size), r.x, r.y, float64(r.size)) {
 						a.GetHit(game)
-						r.state = hitState
-						r.GetHit()
+						r.GetHit(game)
 						game.AddEffect(r.x, r.y, "explosion")
 					}
 				}
@@ -101,10 +99,9 @@ func (r *Bullet) Update(delta float64, game *Game) {
 			for _, a := range game.aliens {
 				if a.state == normalAlienState {
 					if common.Overlap(a.x, a.y, float64(a.size), r.x, r.y, float64(r.size)) {
-						r.state = hitState
-						a.GetHit()
+						a.GetHit(game)
 						game.AddEffect(a.x, a.y, "alien-death")
-						r.GetHit()
+						r.GetHit(game)
 						game.AddEffect(r.x, r.y, "explosion")
 						game.ScorePoint()
 					}
@@ -113,19 +110,17 @@ func (r *Bullet) Update(delta float64, game *Game) {
 			for _, a := range game.blocks {
 				if a.lives > 0 {
 					if common.Overlap(a.x, a.y, float64(a.size-1), r.x, r.y, float64(r.size-1)) {
-						r.state = hitState
-						r.GetHit()
+						r.GetHit(game)
 						game.AddEffect(r.x, r.y, "explosion")
 					}
 				}
 			}
 			if game.mystery.active {
 				if common.Overlap(game.mystery.x, game.mystery.y, float64(game.mystery.size), r.x, r.y, float64(r.size)) {
-					r.state = hitState
 					game.mystery.GetHit(game)
 					game.AddEffect(r.x, r.y, "plus-one")
 					game.AddEffect(r.x, r.y, "explosion")
-					r.GetHit()
+					r.GetHit(game)
 				}
 			}
 		}
@@ -138,9 +133,10 @@ func (r *Bullet) Update(delta float64, game *Game) {
 	}
 }
 
-func (r *Bullet) GetHit() {
+func (r *Bullet) GetHit(game *Game) {
 	r.state = hitState
 	r.timer = 1.0
+	//game.PlaySound("blast")
 }
 
 func (r *Bullet) Draw(screen *ebiten.Image) {

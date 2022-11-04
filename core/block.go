@@ -49,9 +49,11 @@ func (r *Block) GetHit(game *Game) {
 	if r.lives == 0 {
 		game.AddEffect(r.x, r.y, "explosion")
 	}
+	game.PlaySound("block")
 }
 
 func (r *Block) GetDestroyed(game *Game) {
 	r.lives = 0
 	game.AddEffect(r.x, r.y, "explosion")
+	game.PlaySound("blast")
 }

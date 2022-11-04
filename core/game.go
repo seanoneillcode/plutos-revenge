@@ -33,6 +33,7 @@ type Game struct {
 	images           map[string]*ebiten.Image
 	level            int
 	score            int
+	soundManager     *common.SoundManager
 }
 
 func NewGame() *Game {
@@ -50,6 +51,7 @@ func NewGame() *Game {
 		earth:            NewEarth(),
 		lastUpdateCalled: time.Now(),
 		mystery:          NewMystery(common.ScreenWidth, 8, 1),
+		soundManager:     common.NewManager(),
 	}
 	for index := 0; index < 100; index += 1 {
 		g.stars = append(g.stars, NewStar())
@@ -74,7 +76,7 @@ func (r *Game) Update() error {
 			return common.NormalEscapeError
 		}
 	case playingGameState:
-		r.mystery.Update(delta)
+		r.mystery.Update(delta, r)
 		r.player.Update(delta, r)
 		for _, b := range r.bullets {
 			b.Update(delta, r)
@@ -93,7 +95,7 @@ func (r *Game) Update() error {
 		for _, b := range r.bullets {
 			b.Update(delta, r)
 		}
-		r.mystery.Update(delta)
+		r.mystery.Update(delta, r)
 		r.alienGroup.Update(delta, r)
 		for _, a := range r.aliens {
 			a.Update(delta, r)
@@ -115,7 +117,7 @@ func (r *Game) Update() error {
 			r.timer = 0
 			r.StartNewLevel()
 		}
-		r.mystery.Update(delta)
+		r.mystery.Update(delta, r)
 		r.player.Update(delta, r)
 		for _, b := range r.bullets {
 			b.Update(delta, r)
