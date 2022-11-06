@@ -31,6 +31,7 @@ func NewAlienGroup(game *Game, numberOfAliens int) *AlienGroup {
 		shootingRate:      0.2,
 		originalNumAliens: numberOfAliens,
 		speedIncrease:     1.0 / float64(numberOfAliens),
+		nextTimerAmount:   2.0, // initial pause
 	}
 	// add the aliens
 	x := alienSize + 6.0

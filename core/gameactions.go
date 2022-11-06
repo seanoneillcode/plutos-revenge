@@ -58,6 +58,7 @@ func (r *Game) QuitToMenu() {
 	r.aliens = nil
 	r.alienGroup = nil
 	r.earth.y = common.ScreenHeight
+
 }
 
 func (r *Game) EndLevel() {

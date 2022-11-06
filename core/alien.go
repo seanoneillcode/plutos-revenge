@@ -103,8 +103,10 @@ func (r *Alien) GetHit(game *Game) {
 		game.alienGroup.SpeedUp()
 		game.alienGroup.SpeedUp()
 		game.alienGroup.SpeedUp()
+		game.PlaySound("gas")
 	case "bomb":
 		game.RemoveAdjacentAliens(r)
+		game.PlaySound("bomb")
 	default:
 		game.AddEffect(r.x, r.y, "alien-death")
 	}

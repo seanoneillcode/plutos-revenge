@@ -76,6 +76,7 @@ func (r *Game) Update() error {
 	switch r.state {
 	case menuGameState:
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+			r.PlaySound("select")
 			r.StartNewGame()
 		}
 		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
@@ -95,6 +96,7 @@ func (r *Game) Update() error {
 			b.Update(delta, r)
 		}
 		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			r.PlaySound("cancel")
 			r.QuitToMenu()
 		}
 	case gameOverGameState:
@@ -112,9 +114,11 @@ func (r *Game) Update() error {
 			r.QuitToMenu()
 		}
 		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			r.PlaySound("cancel")
 			r.QuitToMenu()
 		}
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+			r.PlaySound("select")
 			r.QuitToMenu()
 		}
 	case levelOverGameState:
@@ -129,14 +133,17 @@ func (r *Game) Update() error {
 			b.Update(delta, r)
 		}
 		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			r.PlaySound("cancel")
 			r.QuitToMenu()
 		}
 	case gameWonGameState:
 		r.player.Update(delta, r)
 		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			r.PlaySound("cancel")
 			r.QuitToMenu()
 		}
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+			r.PlaySound("select")
 			r.QuitToMenu()
 		}
 	}

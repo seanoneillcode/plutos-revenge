@@ -30,6 +30,10 @@ func NewManager() *SoundManager {
 	m.sounds["pickup"] = loadSound(ctx, "res/fx/pickup.ogg")
 	m.sounds["player-death"] = loadSound(ctx, "res/fx/player-death-wash.ogg")
 	m.sounds["player-shoot"] = loadSound(ctx, "res/fx/player-shoot.ogg")
+	m.sounds["cancel"] = loadSound(ctx, "res/fx/cancel.ogg")
+	m.sounds["select"] = loadSound(ctx, "res/fx/select.ogg")
+	m.sounds["bomb"] = loadSound(ctx, "res/fx/bomb.ogg")
+	m.sounds["gas"] = loadSound(ctx, "res/fx/gas.ogg")
 
 	m.sounds["blast"].SetVolume(0.5)
 
