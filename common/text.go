@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	textImage           = LoadImage("text-source.png")
+	textImage           = loadImage("common/text-source.png")
 	textCharacterImages = map[rune]*ebiten.Image{}
 )
 

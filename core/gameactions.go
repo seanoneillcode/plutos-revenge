@@ -6,7 +6,7 @@ import (
 )
 
 func (r *Game) StartNewGame() {
-	r.effects = []*Animation{}
+	r.effects = []*Effect{}
 	fmt.Println("starting new game")
 	r.bullets = []*Bullet{}
 	r.aliens = []*Alien{}
@@ -25,7 +25,7 @@ func (r *Game) StartNewGame() {
 }
 
 func (r *Game) StartNewLevel() {
-	r.effects = []*Animation{}
+	r.effects = []*Effect{}
 	r.level = r.level + 1
 	r.aliens = []*Alien{}
 	r.alienGroup = NewAlienGroup(r, 5*(r.level+2))
@@ -92,14 +92,14 @@ func (r *Game) RemoveBullet(bullet *Bullet) {
 	r.bullets = newBullets
 }
 
-func (r *Game) RemoveAnimation(animation *Animation) {
-	var animations []*Animation
-	for _, b := range r.effects {
-		if b != animation {
-			animations = append(animations, b)
+func (r *Game) RemoveEffect(effect *Effect) {
+	var effects []*Effect
+	for _, e := range r.effects {
+		if e != effect {
+			effects = append(effects, e)
 		}
 	}
-	r.effects = animations
+	r.effects = effects
 }
 
 func (r *Game) RemoveAlien(alien *Alien) {
@@ -128,40 +128,54 @@ func (r *Game) PlaySound(name string) {
 func (r *Game) AddEffect(x float64, y float64, kind string) {
 	switch kind {
 	case "explosion":
-		r.effects = append(r.effects, &Animation{
-			numFrames:       8,
-			frameTimeAmount: 0.06,
-			image:           r.images["explosion"],
-			size:            12,
-			x:               x - 4,
-			y:               y - 4,
+		r.effects = append(r.effects, &Effect{
+			animation: &Animation{
+				numFrames:       8,
+				frameTimeAmount: 0.06,
+				image:           r.images["explosion"],
+				size:            12,
+			},
+			x: x - 4,
+			y: y - 4,
 		})
 	case "player-death":
-		r.effects = append(r.effects, &Animation{
-			numFrames:       6,
-			frameTimeAmount: 0.06,
-			image:           r.images["player-death"],
-			size:            24,
-			x:               x - 6,
-			y:               y - 6,
-		})
+		r.effects = append(r.effects,
+			&Effect{
+				x: x - 6,
+				y: y - 6,
+				animation: &Animation{
+					numFrames:       6,
+					frameTimeAmount: 0.06,
+					image:           r.images["player-death"],
+					size:            24,
+				},
+			},
+		)
 	case "alien-death":
-		r.effects = append(r.effects, &Animation{
-			numFrames:       6,
-			frameTimeAmount: 0.06,
-			image:           r.images["alien-death"],
-			size:            24,
-			x:               x - 6,
-			y:               y - 6,
-		})
+		r.effects = append(r.effects,
+			&Effect{
+				x: x - 6,
+				y: y - 6,
+				animation: &Animation{
+					numFrames:       6,
+					frameTimeAmount: 0.06,
+					image:           r.images["alien-death"],
+					size:            24,
+				},
+			},
+		)
 	case "plus-one":
-		r.effects = append(r.effects, &Animation{
-			numFrames:       6,
-			frameTimeAmount: 0.1,
-			image:           r.images["plus-one"],
-			size:            12,
-			x:               x,
-			y:               y,
-		})
+		r.effects = append(r.effects,
+			&Effect{
+				x: x,
+				y: y,
+				animation: &Animation{
+					numFrames:       6,
+					frameTimeAmount: 0.1,
+					image:           r.images["plus-one"],
+					size:            12,
+				},
+			},
+		)
 	}
 }

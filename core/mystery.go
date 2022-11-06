@@ -9,22 +9,29 @@ import (
 const mysteryTimerAmount = 10 // mysteryTimerAmount
 
 type Mystery struct {
-	x      float64
-	y      float64
-	image  *ebiten.Image
-	dir    int
-	size   float64
-	timer  float64
-	active bool
-	speed  float64
+	x         float64
+	y         float64
+	animation *Animation
+	dir       int
+	size      float64
+	timer     float64
+	active    bool
+	speed     float64
+	frame     int
 }
 
 func NewMystery(x float64, y float64, dir int) *Mystery {
 	m := &Mystery{
-		x:     x,
-		y:     y,
-		dir:   dir,
-		image: common.LoadImage("mystery.png"),
+		x:   x,
+		y:   y,
+		dir: dir,
+		animation: &Animation{
+			image:           common.LoadImage("mystery.png"),
+			numFrames:       2,
+			size:            12,
+			frameTimeAmount: 0.5,
+			isLoop:          true,
+		},
 		size:  alienSize,
 		speed: 40,
 	}
@@ -56,7 +63,7 @@ func (r *Mystery) Update(delta float64, game *Game) {
 			}
 		}
 	}
-
+	r.animation.Update(delta)
 }
 
 func (r *Mystery) GetHit(game *Game) {
@@ -75,5 +82,5 @@ func (r *Mystery) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(r.x, r.y)
 	op.GeoM.Scale(common.Scale, common.Scale)
-	screen.DrawImage(r.image, op)
+	screen.DrawImage(r.animation.GetCurrentFrame(), op)
 }

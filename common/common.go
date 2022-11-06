@@ -20,7 +20,11 @@ const (
 var NormalEscapeError = errors.New("normal escape termination")
 
 func LoadImage(imageFileName string) *ebiten.Image {
-	b, err := ioutil.ReadFile("res/" + imageFileName)
+	return loadImage("res/" + imageFileName)
+}
+
+func loadImage(imageFileName string) *ebiten.Image {
+	b, err := ioutil.ReadFile(imageFileName)
 	if err != nil {
 		log.Fatalf("failed to open file: %v", err)
 	}

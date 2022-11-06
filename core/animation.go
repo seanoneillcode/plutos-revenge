@@ -3,41 +3,45 @@ package core
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"image"
-	"plutos-revenge/common"
 )
 
 type Animation struct {
-	frame           int
-	numFrames       int
-	timer           float64
-	frameTimeAmount float64
-	loop            bool
 	image           *ebiten.Image
+	numFrames       int
 	size            int
-	x               float64
-	y               float64
-	done            bool
+	frameTimeAmount float64
+	isLoop          bool
+	// state
+	frame  int
+	timer  float64
+	isDone bool
 }
 
 func (r *Animation) Update(delta float64) {
+	if r.isDone {
+		return
+	}
 	r.timer = r.timer + delta
 	if r.timer > r.frameTimeAmount {
 		r.timer = r.timer - r.frameTimeAmount
 		r.frame = r.frame + 1
 		if r.frame == r.numFrames {
-			if r.loop {
+			if r.isLoop {
 				r.frame = 0
 			} else {
 				r.frame = r.numFrames - 1
-				r.done = true
+				r.isDone = true
 			}
 		}
 	}
 }
 
-func (r *Animation) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(r.x, r.y)
-	op.GeoM.Scale(common.Scale, common.Scale)
-	screen.DrawImage(r.image.SubImage(image.Rect(r.frame*r.size, 0, (r.frame+1)*r.size, r.size)).(*ebiten.Image), op)
+func (r *Animation) Play() {
+	r.timer = 0
+	r.frame = 0
+	r.isDone = false
+}
+
+func (r *Animation) GetCurrentFrame() *ebiten.Image {
+	return r.image.SubImage(image.Rect(r.frame*r.size, 0, (r.frame+1)*r.size, r.size)).(*ebiten.Image)
 }

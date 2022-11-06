@@ -24,7 +24,7 @@ type Game struct {
 	blocks           []*Block
 	alienGroup       *AlienGroup
 	stars            []*Star
-	effects          []*Animation
+	effects          []*Effect
 	earth            *Earth
 	fader            *Fader
 	mystery          *Mystery
@@ -50,7 +50,7 @@ func NewGame() *Game {
 		fader:            NewFader(),
 		earth:            NewEarth(),
 		lastUpdateCalled: time.Now(),
-		mystery:          NewMystery(common.ScreenWidth, 8, 1),
+		mystery:          NewMystery(common.ScreenWidth, 20, 1),
 		soundManager:     common.NewManager(),
 	}
 	for index := 0; index < 100; index += 1 {
@@ -135,8 +135,8 @@ func (r *Game) Update() error {
 	r.earth.Update(delta)
 	for _, e := range r.effects {
 		e.Update(delta)
-		if e.done {
-			r.RemoveAnimation(e)
+		if e.animation.isDone {
+			r.RemoveEffect(e)
 		}
 	}
 
@@ -154,7 +154,7 @@ func (r *Game) Draw(screen *ebiten.Image) {
 	}
 	switch r.state {
 	case menuGameState:
-		r.drawImage(screen, "splash", 40, 40)
+		r.drawImage(screen, r.images["splash"], 40, 40)
 		common.DrawText(screen, "start game", 60, 120)
 	case playingGameState:
 		r.earth.Draw(screen)
@@ -221,9 +221,9 @@ func (r *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return common.ScreenWidth * common.Scale, common.ScreenHeight * common.Scale
 }
 
-func (r *Game) drawImage(screen *ebiten.Image, img string, x float64, y float64) {
+func (r *Game) drawImage(screen *ebiten.Image, image *ebiten.Image, x float64, y float64) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(x, y)
 	op.GeoM.Scale(common.Scale, common.Scale)
-	screen.DrawImage(r.images[img], op)
+	screen.DrawImage(image, op)
 }

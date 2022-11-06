@@ -1,7 +1,6 @@
 package core
 
 import (
-	"math"
 	"math/rand"
 	"plutos-revenge/common"
 )
@@ -29,7 +28,7 @@ func NewAlienGroup(game *Game, numberOfAliens int) *AlienGroup {
 		y:                 float64((numberOfAliens / 5) * alienSize * -2),
 		dir:               1,
 		speed:             10,
-		shootingRate:      math.Max(0.08, 0.4-(float64(numberOfAliens)*0.01)),
+		shootingRate:      0.2,
 		originalNumAliens: numberOfAliens,
 		speedIncrease:     1.0 / float64(numberOfAliens),
 	}
