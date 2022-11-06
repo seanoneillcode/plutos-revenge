@@ -35,8 +35,29 @@ func NewAlienGroup(game *Game, numberOfAliens int) *AlienGroup {
 	// add the aliens
 	x := alienSize + 6.0
 	y := group.y
+
+	kind := "normal"
+
+	bombIndex := rand.Intn(8)
+	bombCounter := bombIndex
+
+	poisonIndex := rand.Intn(numberOfAliens)
+
 	for index := 0; index < numberOfAliens; index += 1 {
-		alien := NewAlien(x, y, 1)
+		kind = "normal"
+		if rand.Float64() > 0.8 {
+			kind = "tough"
+		}
+		bombCounter -= 1
+		if bombCounter < 0 {
+			bombCounter += 8
+			kind = "bomb"
+		}
+		if index == poisonIndex {
+			kind = "poison"
+		}
+
+		alien := NewAlien(x, y, 1, kind, game.images[kind])
 		game.AddAlien(alien)
 		x = x + (alienSize * 2)
 		if (index+1)%5 == 0 {
@@ -72,10 +93,8 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 		r.y = r.y + (delta * actualSpeed)
 		for index := 0; index < numAliens; index += 1 {
 			alien := game.aliens[index]
-			if alien.state == normalAlienState {
-				alien.y = alien.y + (delta * actualSpeed)
-				numAlive = numAlive + 1
-			}
+			alien.y = alien.y + (delta * actualSpeed)
+			numAlive = numAlive + 1
 		}
 	} else {
 		// move across x
@@ -105,10 +124,8 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 		}
 		for index := 0; index < len(game.aliens); index += 1 {
 			alien := game.aliens[index]
-			if alien.state == normalAlienState {
-				numAlive = numAlive + 1
-				alien.x = alien.x + (float64(r.dir) * delta * r.speed)
-			}
+			numAlive = numAlive + 1
+			alien.x = alien.x + (float64(r.dir) * delta * r.speed)
 		}
 	}
 	// shooting
@@ -118,14 +135,10 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 		r.nextTimerAmount = r.shootingRate + (rand.Float64())
 		randIndex := rand.Intn(numAliens)
 		shootingAlien := game.aliens[randIndex]
-		if shootingAlien.state == hitState {
-			// don't shoot!
-			return
-		}
 		// 50% to try shoot player directly
 		if rand.Float64() > 0.7 {
 			for _, a := range game.aliens {
-				if a.state == normalAlienState && a.x > game.player.x-4 && a.x < game.player.x+float64(game.player.size+4) {
+				if a.x > game.player.x-4 && a.x < game.player.x+float64(game.player.size+4) {
 					shootingAlien = a
 					break
 				}
@@ -139,9 +152,7 @@ func (r *AlienGroup) Update(delta float64, game *Game) {
 func (r *AlienGroup) moveDown(aliens []*Alien) {
 	r.targetY = r.y + (alienSize)
 	for _, a := range aliens {
-		if a.state == normalAlienState {
-			a.dir = r.dir
-		}
+		a.dir = r.dir
 	}
 }
 

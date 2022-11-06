@@ -28,7 +28,7 @@ func NewMystery(x float64, y float64, dir int) *Mystery {
 		animation: &Animation{
 			image:           common.LoadImage("mystery.png"),
 			numFrames:       2,
-			size:            12,
+			size:            13,
 			frameTimeAmount: 0.5,
 			isLoop:          true,
 		},

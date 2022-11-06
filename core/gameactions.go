@@ -125,6 +125,21 @@ func (r *Game) PlaySound(name string) {
 	r.soundManager.PlaySound(name)
 }
 
+func (r *Game) RemoveAdjacentAliens(source *Alien) {
+	x := source.x - 16
+	y := source.y - 16
+	size := 44.0
+	for _, a := range r.aliens {
+		if common.Overlap(a.x, a.y, float64(a.size), x, y, size) {
+			a.GetHit(r)
+		}
+	}
+	r.AddEffect(source.x-12, source.y-12, "explosion")
+	r.AddEffect(source.x-12, source.y+12, "explosion")
+	r.AddEffect(source.x+12, source.y-12, "explosion")
+	r.AddEffect(source.x+12, source.y+12, "explosion")
+}
+
 func (r *Game) AddEffect(x float64, y float64, kind string) {
 	switch kind {
 	case "explosion":
@@ -151,14 +166,27 @@ func (r *Game) AddEffect(x float64, y float64, kind string) {
 				},
 			},
 		)
-	case "alien-death":
+	case "gas":
 		r.effects = append(r.effects,
 			&Effect{
 				x: x - 6,
 				y: y - 6,
 				animation: &Animation{
 					numFrames:       6,
-					frameTimeAmount: 0.06,
+					frameTimeAmount: 0.2,
+					image:           r.images["gas"],
+					size:            24,
+				},
+			},
+		)
+	case "alien-death":
+		r.effects = append(r.effects,
+			&Effect{
+				x: x - 6,
+				y: y - 6,
+				animation: &Animation{
+					numFrames:       8,
+					frameTimeAmount: 0.04,
 					image:           r.images["alien-death"],
 					size:            24,
 				},

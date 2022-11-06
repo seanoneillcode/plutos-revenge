@@ -43,8 +43,14 @@ func NewGame() *Game {
 			"splash":       common.LoadImage("splash.png"),
 			"explosion":    common.LoadImage("explosion.png"),
 			"player-death": common.LoadImage("player-death.png"),
-			"alien-death":  common.LoadImage("pluton-death.png"),
+			"alien-death":  common.LoadImage("alien-death.png"),
 			"plus-one":     common.LoadImage("plus-one.png"),
+			"poison":       common.LoadImage("heart.png"),
+			"tough":        common.LoadImage("tough.png"),
+			"normal":       common.LoadImage("pluton.png"),
+			"bomb":         common.LoadImage("bomb.png"),
+			"hurt-tough":   common.LoadImage("tough-hurt.png"),
+			"gas":          common.LoadImage("gas.png"),
 		},
 		stars:            []*Star{},
 		fader:            NewFader(),
@@ -121,6 +127,9 @@ func (r *Game) Update() error {
 		r.player.Update(delta, r)
 		for _, b := range r.bullets {
 			b.Update(delta, r)
+		}
+		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			r.QuitToMenu()
 		}
 	case gameWonGameState:
 		r.player.Update(delta, r)

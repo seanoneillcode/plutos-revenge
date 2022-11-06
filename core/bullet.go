@@ -97,14 +97,11 @@ func (r *Bullet) Update(delta float64, game *Game) {
 		case "player":
 			// check if hit alien
 			for _, a := range game.aliens {
-				if a.state == normalAlienState {
-					if common.Overlap(a.x, a.y, float64(a.size), r.x, r.y, float64(r.size)) {
-						a.GetHit(game)
-						game.AddEffect(a.x, a.y, "alien-death")
-						r.GetHit(game)
-						game.AddEffect(r.x, r.y, "explosion")
-						game.ScorePoint()
-					}
+				if common.Overlap(a.x, a.y, float64(a.size), r.x, r.y, float64(r.size)) {
+					a.GetHit(game)
+					r.GetHit(game)
+					game.AddEffect(r.x, r.y, "explosion")
+
 				}
 			}
 			for _, a := range game.blocks {
