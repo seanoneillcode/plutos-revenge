@@ -34,7 +34,7 @@ type Player struct {
 	moveYSpeed  float64
 }
 
-func NewPlayer() *Player {
+func NewPlayer(game *Game) *Player {
 	p := &Player{
 		state:      playingState,
 		y:          common.ScreenHeight,
@@ -45,7 +45,7 @@ func NewPlayer() *Player {
 		size:       12,
 		lives:      2,
 		shootTimer: -1,
-		image:      common.LoadImage("player.png"),
+		image:      game.images["player"],
 		animTimer:  -1,
 		frame:      3,
 	}

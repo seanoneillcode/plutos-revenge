@@ -17,43 +17,26 @@ const sampleRate = 44100
 func NewManager() *SoundManager {
 	m := &SoundManager{
 		sounds: map[string]*audio.Player{},
+		ctx:    audio.NewContext(sampleRate),
 	}
 
-	ctx := audio.NewContext(sampleRate)
-
-	m.sounds["alien-hurt"] = loadSound(ctx, "res/fx/alien-hurt.ogg")
-	m.sounds["alien-shoot"] = loadSound(ctx, "res/fx/alien-shoot.ogg")
-	m.sounds["blast"] = loadSound(ctx, "res/fx/blast.ogg")
-	m.sounds["block"] = loadSound(ctx, "res/fx/block.ogg")
-	m.sounds["level-start"] = loadSound(ctx, "res/fx/level-start.ogg")
-	m.sounds["mystery-entrance"] = loadSound(ctx, "res/fx/mystery-entrance.ogg")
-	m.sounds["pickup"] = loadSound(ctx, "res/fx/pickup.ogg")
-	m.sounds["player-death"] = loadSound(ctx, "res/fx/player-death-wash.ogg")
-	m.sounds["player-shoot"] = loadSound(ctx, "res/fx/player-shoot.ogg")
-	m.sounds["cancel"] = loadSound(ctx, "res/fx/cancel.ogg")
-	m.sounds["select"] = loadSound(ctx, "res/fx/select.ogg")
-	m.sounds["bomb"] = loadSound(ctx, "res/fx/bomb.ogg")
-	m.sounds["gas"] = loadSound(ctx, "res/fx/gas.ogg")
-
-	m.sounds["blast"].SetVolume(0.5)
+	//m.sounds["blast"].SetVolume(0.5)
 
 	return m
 }
 
-func loadSound(ctx *audio.Context, file string) *audio.Player {
-
+func (r *SoundManager) LoadSound(name string, file string) {
 	oggSound, err := os.Open(file)
 	if err != nil {
 		fmt.Println(err)
 	}
 	s, err := vorbis.DecodeWithSampleRate(sampleRate, oggSound)
-
-	player, err := ctx.NewPlayer(s)
+	player, err := r.ctx.NewPlayer(s)
 	if err != nil {
 		fmt.Fprint(os.Stderr, "failed to create player "+err.Error())
-		return nil
+		return
 	}
-	return player
+	r.sounds[name] = player
 }
 
 func (r *SoundManager) PlaySound(name string) {

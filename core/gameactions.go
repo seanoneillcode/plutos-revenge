@@ -15,7 +15,7 @@ func (r *Game) StartNewGame() {
 		NewBlock(150, r),
 	}
 	r.alienGroup = NewAlienGroup(r, 10)
-	r.player = NewPlayer()
+	r.player = NewPlayer(r)
 	r.state = playingGameState
 	r.earth.Target(common.ScreenHeight - 24)
 	r.player.Target(playerYNormal)

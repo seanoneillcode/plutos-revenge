@@ -32,10 +32,11 @@ func NewAlien(x float64, y float64, dir int, kind string, image *ebiten.Image) *
 	switch kind {
 	case "normal":
 		a.animation = &Animation{
-			image:     image,
-			numFrames: 1,
-			size:      alienSize,
-			isDone:    true,
+			image:           image,
+			numFrames:       4,
+			size:            alienSize,
+			frameTimeAmount: 0.25,
+			isLoop:          true,
 		}
 	case "tough":
 		a.animation = &Animation{

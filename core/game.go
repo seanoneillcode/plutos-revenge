@@ -39,6 +39,7 @@ func NewGame() *Game {
 	r := &Game{
 		state: menuGameState,
 		images: map[string]*ebiten.Image{
+			// load all the images once, up front
 			"splash":       common.LoadImage("splash.png"),
 			"explosion":    common.LoadImage("explosion.png"),
 			"player-death": common.LoadImage("player-death.png"),
@@ -53,10 +54,26 @@ func NewGame() *Game {
 			"block":        common.LoadImage("block.png"),
 			"earth":        common.LoadImage("earth.png"),
 			"mystery":      common.LoadImage("mystery.png"),
+			"player":       common.LoadImage("player.png"),
 		},
 		lastUpdateCalled: time.Now(),
 		soundManager:     common.NewManager(),
 	}
+
+	r.soundManager.LoadSound("alien-hurt", "res/fx/alien-hurt.ogg")
+	r.soundManager.LoadSound("alien-shoot", "res/fx/alien-shoot.ogg")
+	r.soundManager.LoadSound("blast", "res/fx/blast.ogg")
+	r.soundManager.LoadSound("block", "res/fx/block.ogg")
+	r.soundManager.LoadSound("level-start", "res/fx/level-start.ogg")
+	r.soundManager.LoadSound("mystery-entrance", "res/fx/mystery-entrance.ogg")
+	r.soundManager.LoadSound("pickup", "res/fx/pickup.ogg")
+	r.soundManager.LoadSound("player-death", "res/fx/player-death-wash.ogg")
+	r.soundManager.LoadSound("player-shoot", "res/fx/player-shoot.ogg")
+	r.soundManager.LoadSound("cancel", "res/fx/cancel.ogg")
+	r.soundManager.LoadSound("select", "res/fx/select.ogg")
+	r.soundManager.LoadSound("bomb", "res/fx/bomb.ogg")
+	r.soundManager.LoadSound("gas", "res/fx/gas.ogg")
+
 	r.stars = []*Star{}
 	for index := 0; index < 100; index += 1 {
 		r.stars = append(r.stars, NewStar())
