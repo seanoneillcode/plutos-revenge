@@ -20,7 +20,6 @@ type Player struct {
 	x           float64
 	y           float64
 	targetY     float64
-	image       string
 	frame       int
 	frames      int
 	size        int
@@ -28,7 +27,7 @@ type Player struct {
 	speed       float64
 	timer       float64
 	shootTimer  float64
-	images      map[string]*ebiten.Image
+	image       *ebiten.Image
 	lives       int
 	animTimer   float64
 	targetFrame int
@@ -37,7 +36,6 @@ type Player struct {
 
 func NewPlayer() *Player {
 	p := &Player{
-		image:      "player",
 		state:      playingState,
 		y:          common.ScreenHeight,
 		x:          common.ScreenWidth / 2,
@@ -47,11 +45,9 @@ func NewPlayer() *Player {
 		size:       12,
 		lives:      2,
 		shootTimer: -1,
-		images: map[string]*ebiten.Image{
-			"player": common.LoadImage("player.png"),
-		},
-		animTimer: -1,
-		frame:     3,
+		image:      common.LoadImage("player.png"),
+		animTimer:  -1,
+		frame:      3,
 	}
 	return p
 }
@@ -59,7 +55,6 @@ func NewPlayer() *Player {
 func (r *Player) Update(delta float64, game *Game) {
 	switch r.state {
 	case playingState:
-
 		inputX := 0
 		r.targetFrame = 3
 		if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) || ebiten.IsKeyPressed(ebiten.KeyA) {
@@ -102,11 +97,6 @@ func (r *Player) Update(delta float64, game *Game) {
 		if r.x > common.ScreenWidth-float64(r.size) {
 			r.x = common.ScreenWidth - float64(r.size)
 		}
-	case dyingState:
-		r.timer = r.timer - delta
-		if r.timer < 0 {
-			game.GameOver()
-		}
 	}
 	if math.Abs(r.y-r.targetY) < (2 * r.moveYSpeed * delta) {
 		r.y = r.targetY
@@ -126,14 +116,14 @@ func (r *Player) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(r.x, r.y)
 	op.GeoM.Scale(common.Scale, common.Scale)
-	screen.DrawImage(r.images[r.image].SubImage(image.Rect(r.frame*r.size, 0, (r.frame+1)*r.size, r.size)).(*ebiten.Image), op)
+	screen.DrawImage(r.image.SubImage(image.Rect(r.frame*r.size, 0, (r.frame+1)*r.size, r.size)).(*ebiten.Image), op)
 }
 
 func (r *Player) GetHit(game *Game) {
 	r.lives = r.lives - 1
 	if r.lives < 0 {
 		r.state = dyingState
-		r.timer = dyingTimeAmount
+		game.GameOver()
 		game.AddEffect(r.x, r.y, "player-death")
 		game.PlaySound("player-death")
 	} else {

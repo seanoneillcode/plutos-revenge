@@ -26,7 +26,6 @@ type Game struct {
 	stars            []*Star
 	effects          []*Effect
 	earth            *Earth
-	fader            *Fader
 	mystery          *Mystery
 	timer            float64
 	state            string
@@ -37,7 +36,7 @@ type Game struct {
 }
 
 func NewGame() *Game {
-	g := &Game{
+	r := &Game{
 		state: menuGameState,
 		images: map[string]*ebiten.Image{
 			"splash":       common.LoadImage("splash.png"),
@@ -51,18 +50,20 @@ func NewGame() *Game {
 			"bomb":         common.LoadImage("bomb.png"),
 			"hurt-tough":   common.LoadImage("tough-hurt.png"),
 			"gas":          common.LoadImage("gas.png"),
+			"block":        common.LoadImage("block.png"),
+			"earth":        common.LoadImage("earth.png"),
+			"mystery":      common.LoadImage("mystery.png"),
 		},
-		stars:            []*Star{},
-		fader:            NewFader(),
-		earth:            NewEarth(),
 		lastUpdateCalled: time.Now(),
-		mystery:          NewMystery(common.ScreenWidth, 20, 1),
 		soundManager:     common.NewManager(),
 	}
+	r.stars = []*Star{}
 	for index := 0; index < 100; index += 1 {
-		g.stars = append(g.stars, NewStar())
+		r.stars = append(r.stars, NewStar())
 	}
-	return g
+	r.mystery = NewMystery(common.ScreenWidth, 20, 1, r)
+	r.earth = NewEarth(r)
+	return r
 }
 
 func (r *Game) Update() error {
@@ -99,6 +100,7 @@ func (r *Game) Update() error {
 			r.PlaySound("cancel")
 			r.QuitToMenu()
 		}
+		r.earth.Update(delta)
 	case gameOverGameState:
 		for _, b := range r.bullets {
 			b.Update(delta, r)
@@ -121,6 +123,7 @@ func (r *Game) Update() error {
 			r.PlaySound("select")
 			r.QuitToMenu()
 		}
+		r.earth.Update(delta)
 	case levelOverGameState:
 		r.timer = r.timer - delta
 		if r.timer < 0 {
@@ -136,6 +139,7 @@ func (r *Game) Update() error {
 			r.PlaySound("cancel")
 			r.QuitToMenu()
 		}
+		r.earth.Update(delta)
 	case gameWonGameState:
 		r.player.Update(delta, r)
 		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
@@ -146,9 +150,9 @@ func (r *Game) Update() error {
 			r.PlaySound("select")
 			r.QuitToMenu()
 		}
+		r.earth.Update(delta)
 	}
 
-	r.earth.Update(delta)
 	for _, e := range r.effects {
 		e.Update(delta)
 		if e.animation.isDone {

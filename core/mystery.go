@@ -20,13 +20,13 @@ type Mystery struct {
 	frame     int
 }
 
-func NewMystery(x float64, y float64, dir int) *Mystery {
+func NewMystery(x float64, y float64, dir int, game *Game) *Mystery {
 	m := &Mystery{
 		x:   x,
 		y:   y,
 		dir: dir,
 		animation: &Animation{
-			image:           common.LoadImage("mystery.png"),
+			image:           game.images["mystery"],
 			numFrames:       2,
 			size:            13,
 			frameTimeAmount: 0.5,
@@ -35,20 +35,19 @@ func NewMystery(x float64, y float64, dir int) *Mystery {
 		size:  alienSize,
 		speed: 40,
 	}
-	m.reset()
+	m.Reset()
 	return m
 }
 
 func (r *Mystery) Update(delta float64, game *Game) {
-
 	if r.active {
 		r.x = r.x + (r.speed * delta * float64(r.dir))
 		// gone from the side of the screen
 		if r.x > common.ScreenWidth {
-			r.reset()
+			r.Reset()
 		}
 		if r.x < 0-r.size {
-			r.reset()
+			r.Reset()
 		}
 	} else {
 		r.timer = r.timer - delta
@@ -68,11 +67,11 @@ func (r *Mystery) Update(delta float64, game *Game) {
 
 func (r *Mystery) GetHit(game *Game) {
 	game.player.lives += 1
-	r.reset()
+	r.Reset()
 	game.PlaySound("pickup")
 }
 
-func (r *Mystery) reset() {
+func (r *Mystery) Reset() {
 	r.active = false
 	r.x = common.ScreenWidth
 	r.timer = rand.Float64()*mysteryTimerAmount + mysteryTimerAmount

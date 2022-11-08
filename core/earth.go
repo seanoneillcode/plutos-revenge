@@ -13,11 +13,11 @@ type Earth struct {
 	moveAmount float64
 }
 
-func NewEarth() *Earth {
+func NewEarth(game *Game) *Earth {
 	return &Earth{
 		y:          common.ScreenHeight,
 		targetY:    0,
-		image:      common.LoadImage("earth.png"),
+		image:      game.images["earth"],
 		moveAmount: 6,
 	}
 }

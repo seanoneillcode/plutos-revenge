@@ -14,13 +14,13 @@ type Block struct {
 	size  int
 }
 
-func NewBlock(x float64) *Block {
+func NewBlock(x float64, game *Game) *Block {
 	return &Block{
 		x:     x,
 		y:     playerYNormal - 16,
 		lives: 3,
 		size:  12,
-		image: common.LoadImage("block.png"),
+		image: game.images["block"],
 	}
 }
 

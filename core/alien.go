@@ -71,6 +71,9 @@ func (r *Alien) Update(delta float64, game *Game) {
 	if r.y > common.ScreenHeight+float64(r.size) {
 		game.RemoveAlien(r)
 	}
+	if r.y > common.ScreenHeight-float64(r.size) {
+		game.GameOver()
+	}
 	// check if hit player
 	if game.player.state == playingState {
 		if common.Overlap(game.player.x, game.player.y, float64(game.player.size), r.x, r.y, float64(r.size)) {

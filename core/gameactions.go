@@ -7,13 +7,12 @@ import (
 
 func (r *Game) StartNewGame() {
 	r.effects = []*Effect{}
-	fmt.Println("starting new game")
 	r.bullets = []*Bullet{}
 	r.aliens = []*Alien{}
 	r.blocks = []*Block{
-		NewBlock(30),
-		NewBlock(90),
-		NewBlock(150),
+		NewBlock(30, r),
+		NewBlock(90, r),
+		NewBlock(150, r),
 	}
 	r.alienGroup = NewAlienGroup(r, 10)
 	r.player = NewPlayer()
@@ -31,24 +30,26 @@ func (r *Game) StartNewLevel() {
 	r.alienGroup = NewAlienGroup(r, 5*(r.level+2))
 	r.state = playingGameState
 	r.blocks = []*Block{
-		NewBlock(30),
-		NewBlock(90),
-		NewBlock(150),
+		NewBlock(30, r),
+		NewBlock(90, r),
+		NewBlock(150, r),
 	}
 	r.PlaySound("level-start")
+
 }
 
 func (r *Game) GameOver() {
-	if r.state == playingGameState {
-		fmt.Println("game over")
-		r.timer = 6 // seconds
-		r.state = gameOverGameState
+	if r.state != playingGameState {
+		return
 	}
+	r.timer = 6
+	r.state = gameOverGameState
 	r.player.Target(common.ScreenHeight)
 	r.alienGroup.targetY = common.ScreenHeight
 	for _, b := range r.blocks {
 		b.GetDestroyed(r)
 	}
+	r.mystery.Reset()
 }
 
 func (r *Game) QuitToMenu() {
@@ -58,7 +59,6 @@ func (r *Game) QuitToMenu() {
 	r.aliens = nil
 	r.alienGroup = nil
 	r.earth.y = common.ScreenHeight
-
 }
 
 func (r *Game) EndLevel() {
