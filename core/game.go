@@ -192,7 +192,11 @@ func (r *Game) Draw(screen *ebiten.Image) {
 	switch r.state {
 	case menuGameState:
 		r.drawImage(screen, r.images["splash"], 40, 40)
-		common.DrawText(screen, "start game", 60, 120)
+		common.DrawText(screen, "controls", 60, 120)
+		common.DrawText(screen, "press space to shoot", 26, 140)
+		common.DrawText(screen, "wasd or arrow keys to move", 12, 150)
+		common.DrawText(screen, "press space to play!", 26, 180)
+
 	case playingGameState:
 		r.earth.Draw(screen)
 		r.player.Draw(screen)
